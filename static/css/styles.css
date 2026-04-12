@@ -1,0 +1,55 @@
+:root {
+  /* --- Colores base --- */
+  --blue-primary: #008CFF;
+  --blue-secondary: #00E5FF;
+  --blue-deep: #041727;
+  --blue-dark: #05060A;
+  --blue-ice: #D8F3FF;
+
+  /* --- Glassmorphism --- */
+  --glass-bg: rgba(255, 255, 255, 0.06);
+  --glass-border: rgba(0, 200, 255, 0.25);
+  --glass-glow: rgba(0, 200, 255, 0.5);
+
+  /* --- Textos --- */
+  --text-main: #ffffff;
+  --text-subtle: #b8dfff;
+
+  /* --- Botones --- */
+  --btn-gradient-start: #008CFF;
+  --btn-gradient-end: #00E5FF;
+
+  /* --- Estados --- */
+  --success: #00ffcc;
+  --warning: #ffd54f;
+  --error: #ff6b6b;
+}
+
+/* --- Ejemplo de uso --- */
+
+/* Fondo general */
+body {
+  background: var(--blue-dark);
+  color: var(--text-main);
+}
+
+/* Contenedores glass */
+.container {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(10px);
+}
+
+/* Botón principal */
+.button {
+  background: linear-gradient(135deg,
+    var(--btn-gradient-start),
+    var(--btn-gradient-end)
+  );
+  box-shadow: 0 0 16px var(--glass-glow);
+}
+
+/* Títulos */
+.title {
+  color: var(--blue-primary);
+}

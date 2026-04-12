@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sentiment Analysis Algorithm</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet" />
+
+  <style>
+    /* Página: columna + sticky footer */
+    html,
+    body {
+      height: 100%;
+    }
+
+    body {
+      margin: 0;
+      background: var(--blue-deep);
+      font-family: 'Poppins', sans-serif;
+      color: #fff;
+    }
+
+    .page {
+      min-height: 100svh;
+      /* usa svh para móviles con UI dinámica */
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    .container2 {
+      max-width: 600px;
+      text-align: center;
+      padding: 30px 30px;
+      animation: fadeIn 1.8s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: scale(0.98);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .title {
+      font-size: 70px;
+      color: #008CFF;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+
+    .subtitle {
+      font-size: 16px;
+      line-height: 1.5;
+      margin-bottom: 32px;
+    }
+
+    .subtitle2 {
+      margin-top: 0;
+      color: #8c8c8c;
+      font-size: 16px;
+      line-height: 1.5;
+      margin-bottom: 32px;
+    }
+
+    .button {
+      display: inline-block;
+      padding: 14px 28px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #008cff, #00e5ff);
+      color: #fff;
+      font-size: 1.1rem;
+      text-decoration: none;
+      transition: transform .2s ease;
+    }
+
+    .button:hover {
+      transform: scale(1.04);
+    }
+
+    .footer {
+      margin-top: auto;
+      font-size: 13px;
+      text-align: center;
+      opacity: 0.8;
+      padding: 14px 16px;
+      padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      .container {
+        padding: 28px 20px;
+      }
+
+      .title {
+        font-size: 50px;
+      }
+
+      .subtitle {
+        font-size: 15px;
+      }
+
+      .subtitle2 {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page">
+    <div class="container2" id="box">
+      <h1 class="title">Welcome!</h1>
+      <p class="subtitle">
+        Esta aplicación se enfoca en implementar y evaluar diferentes algoritmos de aprendizaje automático y redes
+        neuronales, para el <strong>análisis de polaridad (positivo/negativo)</strong> en reseñas cinematográficas.
+        Utilizando como
+        dataset <strong>IMDB y SST-2</strong>, se busca
+        desarrollar un pipeline completo que aborde todas las etapas del procesamiento de texto.
+      </p>
+      <p class="subtitle2">
+        Arquitectura basada en Flask, Gitlab y Python para el procesamiento
+        de datos.
+      </p>
+
+      <a href="{{ url_for('main.model_info') }}" class="button" id="enterBtn">
+        Entrar
+      </a>
+    </div>
+
+    <footer class="footer">
+      <p style="margin-bottom: 0;">Trabajo de Fin de Grado de Ingeniería Informática</p>
+      <p style="margin-top: 2px; margin-bottom: 0;">Francisco Javier Zataraín Lamy</p>
+    </footer>
+  </div>
+</body>
+
+</html>
