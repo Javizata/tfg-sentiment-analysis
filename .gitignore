@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+.venv
+venv/
+
+# Artifacts / modelos
+artifacts/
+*.pkl
+*.pt
+*.bin
+
+# VS Code
+.vscode/
+
+# Logs
+*.log

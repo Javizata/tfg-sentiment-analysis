@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dashboard Analítico</title>
+
+  <!-- SOCKET + PLOTLY -->
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
+
+  <style>
+    :root {
+      --bg: #0b1016;
+      --panel: #0f1a24;
+      --panel-2: #0b1320;
+      --accent: #00d1ff;
+      --accent-2: #00ffa6;
+      --text: #e9f1f5;
+      --muted: #8aa4b5;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Roboto, Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(1200px 800px at 70% -10%, #123 0%, var(--bg) 60%),
+        linear-gradient(#0a0f14, #06090d);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 50px auto;
+      padding: 0 16px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    /* PANEL PRINCIPAL */
+    .panel {
+      background: linear-gradient(180deg, rgba(255, 255, 255, .02), rgba(0, 0, 0, .25)),
+        linear-gradient(180deg, var(--panel), var(--panel-2));
+      border: 1px solid rgba(0, 209, 255, .15);
+      border-radius: 18px;
+      box-shadow:
+        0 0 0 1px rgba(0, 209, 255, .05) inset,
+        0 10px 30px rgba(0, 0, 0, .45);
+      padding: 24px;
+    }
+
+    /* CONTROLES */
+    .controls {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 24px;
+    }
+
+    .btn {
+      padding: 12px 22px;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, .08);
+      background: linear-gradient(180deg, rgba(255, 255, 255, .06), rgba(0, 0, 0, .25));
+      box-shadow: 0 6px 20px rgba(0, 0, 0, .35);
+      color: var(--accent);
+      font-size: 14px;
+      cursor: pointer;
+      transition: transform .2s ease, box-shadow .3s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow:
+        0 12px 30px rgba(0, 0, 0, .5),
+        0 0 0 6px rgba(0, 209, 255, .25);
+    }
+
+    /* GRID */
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    @media(max-width:900px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* CARDS */
+    .card {
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, .08);
+      background: linear-gradient(180deg, rgba(255, 255, 255, .06), rgba(0, 0, 0, .25));
+      box-shadow: 0 6px 20px rgba(0, 0, 0, .35);
+      padding: 16px;
+      position: relative;
+    }
+
+    .card h3 {
+      margin: 0 0 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      font-size: 14px;
+      letter-spacing: .06em;
+    }
+
+    /* PLOT */
+    .plot {
+      width: 100%;
+      min-height: 300px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <h1>Dashboard Analítico</h1>
+
+    <section class="panel">
+
+      <div class="controls">
+        <button class="btn" onclick="socket.emit('report')">
+          Cargar visualizaciones
+        </button>
+      </div>
+
+      <div class="grid">
+
+        <div class="card">
+          <h3>Gráfico de Líneas</h3>
+          <div id="grafico_lineas" class="plot"></div>
+        </div>
+
+        <div class="card">
+          <h3>Gráfico de Barras</h3>
+          <div id="grafico_barras" class="plot"></div>
+        </div>
+
+        <div class="card">
+          <h3>Tabla de Datos</h3>
+          <div id="tabla" class="plot"></div>
+        </div>
+
+        <div class="card">
+          <h3>Matriz de Confusión</h3>
+          <div id="matriz_confusion" class="plot"></div>
+        </div>
+
+      </div>
+    </section>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.js"></script>
+  <script>
+    if (!window.socket) {
+      const SERVER_URL = "/stats";
+
+      window.socket = io(SERVER_URL, {
+        transports: ['websocket', 'polling'],
+      });
+    }
+    // Reusar la misma conexión
+    const socket = window.socket;
+    // URL del servidor
+    socket.on("connect", () => {
+      console.log("✅ Socket conectado:", socket.id);
+      console.log("📡 Namespace:", socket.nsp);
+    });
+
+    socket.on("connect_error", (err) => {
+      console.error("❌ Error de conexión:", err.message);
+    });
+
+    socket.on("disconnect", () => {
+      console.log("❎ Socket desconectado");
+    });
+
+    socket.on("grafico_lineas", fig => {
+      Plotly.newPlot("grafico_lineas", fig.data, fig.layout, { displayModeBar: false, responsive: true });
+    });
+
+    socket.on("grafico_barras", fig => {
+      Plotly.newPlot("grafico_barras", fig.data, fig.layout, { displayModeBar: false, responsive: true });
+    });
+
+    socket.on("tabla", fig => {
+      Plotly.newPlot("tabla", fig.data, fig.layout, { displayModeBar: false, responsive: true });
+    });
+
+    socket.on("matriz_confusion", fig => {
+      Plotly.newPlot("matriz_confusion", fig.data, fig.layout, { displayModeBar: false, responsive: true });
+    });
+  </script>
+
+</body>
+
+</html>

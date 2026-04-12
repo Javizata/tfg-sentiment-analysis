@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+
+  <title>Configuracion</title>
+  <style>
+    :root {
+      --bg: #0b1016;
+      --panel: #0f1a24;
+      --panel-2: #0b1320;
+      --accent: #00d1ff;
+      --accent-2: #00ffa6;
+      --danger: #ff3b3b;
+      --text: #e9f1f5;
+      --muted: #8aa4b5;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      flex-wrap: wrap;
+      font-family: "Segoe UI", Roboto, Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(1200px 800px at 70% -10%, #123 0%, var(--bg) 60%),
+        linear-gradient(#0a0f14, #06090d);
+    }
+
+    .options {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+    }
+
+    @media (max-width: 768px) {
+      .options {
+        flex-wrap: wrap;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        /* Poner elementos uno debajo del otro */
+      }
+
+    }
+
+
+    .container {
+      width: 95%;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10%;
+    }
+
+    h1 {
+      text-align: center;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-size: 2.5rem;
+    }
+
+    .panel {
+      background: linear-gradient(180deg, rgba(255, 255, 255, .02), rgba(0, 0, 0, .25)),
+        linear-gradient(180deg, var(--panel), var(--panel-2));
+      border: 1px solid rgba(0, 209, 255, .15);
+      border-radius: 18px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, .45);
+      width: 100%;
+      height: 100%;
+      padding: 30px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .info {
+      display: flex;
+      flex-direction: column;
+      margin-left: 2%;
+    }
+
+    .continue-button {
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, .08);
+      background: linear-gradient(180deg, rgba(255, 255, 255, .06), rgba(0, 209, 255, 0.15));
+      box-shadow: 0 6px 20px rgba(0, 0, 0, .35);
+      transition: transform .2s ease, box-shadow .3s ease;
+      color: var(--accent);
+      font-size: 1.2rem;
+      padding: 12px 24px;
+      cursor: pointer;
+      width: 100%;
+      text-align: center;
+    }
+
+    .continue-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, .5),
+        0 0 0 6px rgba(0, 209, 255, .25);
+    }
+
+
+
+    /* ========================= */
+    /* ERRORES */
+    /* ========================= */
+    #errors {
+      width: 100%;
+      margin-top: 15px;
+    }
+
+    .error-message {
+      color: var(--danger);
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Configuracion de Modelos</h1>
+  <div class="info">
+    <p>Actualmente los modelos son entrenados con la base de datos de IMDB de Hugging Face. <br>
+      Para conseguir una mayor precision se realiza un "fine tunning" con la base de datos de STT-2 de Hugging Face.
+    </p>
+    <br>
+  </div>
+  <div class="options">
+    <section class="container">
+      <div class="panel">
+        <h2>Entrenar Modelos Clasicos</h2>
+        <p>En esta seccion existe la posibilidad de reentrenar los modelos en tiempo real. <br>
+          Esto se realiza mediante una <strong>Pipeline de GitLab</strong> la cual entrena todos los modelos clasicos de
+          nuevo
+          para posteriormente ser utilizados.
+        </p>
+
+
+        <form action="{{ url_for('pipeline.trigger_pipeline_route') }}" method="POST">
+          <button class="continue-button" type="submit">Lanzar pipeline</button>
+        </form>
+
+
+
+        <div id="logs"></div>
+
+        <!-- NUEVO: MÉTRICAS -->
+        <div id="metrics" style="display:none;"></div>
+
+        <!-- NUEVO: ERRORES -->
+        <div id="errors"></div>
+      </div>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+      <ul class="flash-messages">
+        {% for category, message in messages %}
+        <li class="{{ category }}">{{ message }}</li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+      {% endwith %}
+    </section>
+    <section class="container">
+      <div class="panel">
+        <h2>Entrenar Red Neuronal</h2>
+        <p>Respecto al entrenamiento de la red neuronal ha sido realizado en <strong>Google Colab</strong> debido a los
+          costes de computacion. <br>
+          En caso de solicitar un reentrenamiento seran necesarios los siguientes pasos:</p>
+        <p>1 - Descargar el archivo de Google Colab. <br>
+          2 - Abrir la pagina de Google Colab. <br>
+          3 - Crear un proyecto con ese archivo e iniciar el entrenamiento. <br>
+          4 - Descargar el archivo con el modelo entrenado y subirlo en la seccion "Entrenar Red Neuronal"</p>
+        <button class="continue-button">Descargar Red Neuronal</button>
+        <div class="new-neural">
+
+          <input type="file" name="red" id="redN">
+
+        </div>
+      </div>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+      <ul class="flash-messages">
+        {% for category, message in messages %}
+        <li class="{{ category }}">{{ message }}</li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+      {% endwith %}
+    </section>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.js"></script>
+
+  <script>
+    if (!window.socket) {
+      const SERVER_URL = "/pipeline";
+
+      window.socket = io(SERVER_URL, {
+        transports: ['websocket', 'polling'],
+      });
+    }
+
+    // Reusar la misma conexión
+    const socket = window.socket;
+    // URL del servidor
+
+
+    // Configuración de SocketIO
+
+
+    socket.on("connect", () => {
+      console.log("✅ Socket conectado:", socket.id);
+      console.log("📡 Namespace:", socket.nsp);
+    });
+
+    socket.on("connect_error", (err) => {
+      console.error("❌ Error de conexión:", err.message);
+    });
+
+    socket.on("disconnect", () => {
+      console.log("❎ Socket desconectado");
+    });
+
+    // Escuchar TODOS los eventos para debug
+    socket.onAny((eventName, ...args) => {
+      console.log("📨 Evento recibido:", eventName, args);
+    });
+
+    const logsContainer = document.getElementById("logs");
+    const metricsContainer = document.getElementById("metrics");
+    const errorsContainer = document.getElementById("errors");
+
+    const jobsMap = {};
+
+    // =========================
+    // LOGS EN TIEMPO REAL
+    // =========================
+    socket.on("job_log", (data) => {
+      console.log("📥 RECIBIDO job_log:", data);
+      console.log("   - Job:", data.job);
+      console.log("   - Status:", data.status);
+      console.log("   - Log length:", data.log ? data.log.length : 0);
+
+      let jobDiv = jobsMap[data.job];
+      if (!jobDiv) {
+        jobDiv = document.createElement("div");
+        jobDiv.id = "job-" + data.job;
+
+        const title = document.createElement("div");
+        title.className = "job-title";
+        title.textContent = `${data.job} (${data.status})`;
+
+        const logContent = document.createElement("div");
+        logContent.className = "log-line";
+
+        jobDiv.appendChild(title);
+        jobDiv.appendChild(logContent);
+        logsContainer.appendChild(jobDiv);
+
+        jobsMap[data.job] = jobDiv;
+        console.log("✅ Creado nuevo job div para:", data.job);
+      } else {
+        // actualizar status si cambia
+        jobDiv.querySelector(".job-title").textContent = `${data.job} (${data.status})`;
+        console.log("✅ Actualizado job div para:", data.job);
+      }
+
+      // append del log con saltos de línea
+      const logContent = jobDiv.querySelector(".log-line");
+      logContent.innerHTML += data.log.replace(/\n/g, "<br>");
+
+      // scroll automático
+      logsContainer.scrollTop = logsContainer.scrollHeight;
+    });
+
+    // =========================
+    // MÉTRICAS RECIBIDAS
+    // =========================
+    socket.on("metrics", (data) => {
+      metricsContainer.style.display = "block";
+
+      let html = "<h2>Resultados del entrenamiento</h2>";
+      data.forEach(model => {
+        html += `
+          <div class="metric-card">
+            <h3>${model.model}</h3>
+            <div class="metric-value">Accuracy: ${model.accuracy.toFixed(4)}</div>
+            <div class="metric-value">Precision: ${model.precision.toFixed(4)}</div>
+            <div class="metric-value">Recall: ${model.recall.toFixed(4)}</div>
+            <div class="metric-value">F1-score: ${model.f1_score.toFixed(4)}</div>
+          </div>
+        `;
+      });
+
+      metricsContainer.innerHTML = html;
+    });
+
+    // =========================
+    // ERRORES
+    // =========================
+    socket.on("error", (data) => {
+      if (errorsContainer) {
+        const errDiv = document.createElement("div");
+        errDiv.className = "error-message";
+        errDiv.textContent = data.message;
+        errorsContainer.appendChild(errDiv);
+      } else {
+        alert(data.message);
+      }
+    });
+  </script>
+</body>
+
+</html>

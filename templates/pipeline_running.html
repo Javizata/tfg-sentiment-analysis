@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+
+  <title>Configuración</title>
+
+  <style>
+    :root {
+      --bg: #0b1016;
+      --panel: #0f1a24;
+      --panel-2: #0b1320;
+      --accent: #00d1ff;
+      --accent-2: #00ffa6;
+      --danger: #ff3b3b;
+      --text: #e9f1f5;
+      --muted: #8aa4b5;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      font-family: "Segoe UI", Roboto, Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(1200px 800px at 70% -10%, #123 0%, var(--bg) 60%),
+        linear-gradient(#0a0f14, #06090d);
+    }
+
+    .options {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+    }
+
+    @media (max-width: 768px) {
+      .options {
+        flex-wrap: wrap;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+    }
+
+
+    .container {
+      width: 90%;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10%;
+    }
+
+    h1 {
+      text-align: center;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-size: 2.5rem;
+    }
+
+    .panel {
+      background: linear-gradient(180deg, rgba(255, 255, 255, .02), rgba(0, 0, 0, .25)),
+        linear-gradient(180deg, var(--panel), var(--panel-2));
+      border: 1px solid rgba(0, 209, 255, .15);
+      border-radius: 18px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, .45);
+      width: 100%;
+      height: 100%;
+      padding: 30px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .info {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      margin-left: 2%;
+      color: var(--muted);
+      width: 100%;
+    }
+
+    .button {
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, .08);
+      background: linear-gradient(180deg, rgba(255, 255, 255, .06), rgba(0, 209, 255, 0.15));
+      box-shadow: 0 6px 20px rgba(0, 0, 0, .35);
+      transition: transform .2s ease, box-shadow .3s ease;
+      color: var(--accent);
+      font-size: 1.2rem;
+      padding: 12px 24px;
+      cursor: pointer;
+      width: fit-content;
+      text-align: center;
+
+    }
+
+    .continue-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, .5),
+        0 0 0 6px rgba(0, 209, 255, .25);
+    }
+
+    /* ========================= */
+    /* ERRORES */
+    /* ========================= */
+    #errors {
+      width: 100%;
+      margin-top: 15px;
+    }
+
+    .error-message {
+      color: var(--danger);
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+
+    /* ========================= */
+    /* LOGS */
+    /* ========================= */
+
+    .logs-container {
+      background: #0f1a24;
+      border: 1px solid rgba(0, 209, 255, 0.15);
+      border-radius: 12px;
+      padding: 16px;
+      margin-top: 20px;
+      width: 100%;
+      height: 450px;
+      overflow-y: auto;
+      overflow-y: auto;
+      font-family: monospace;
+      white-space: pre-wrap;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+    }
+
+    .job-box {
+      background: rgba(0, 0, 0, 0.25);
+      border-left: 4px solid #00d1ff;
+      padding: 12px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+    }
+
+    .job-title {
+      font-weight: bold;
+      margin-bottom: 6px;
+      color: #00d1ff;
+    }
+
+    .log-line {
+      color: #e9f1f5;
+      font-size: 0.50rem;
+      line-height: 1.25rem;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1> Panel de Control</h1>
+
+
+
+  <div class="options">
+
+    <!-- PANEL 1: PIPELINE -->
+    <section class="container">
+      <div class="panel">
+        <h2>Modelos Clásicos</h2>
+        <img src="{{ url_for('static', filename='img/Carga1.gif') }}" alt="Carga" style="width: 15%;">
+        <div class="info">
+          {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+          <ul class="flash-messages">
+            {% for category, message in messages %}
+            <li class="{{ category }}">{{ message }}</li>
+            {% endfor %}
+          </ul>
+          {% endif %}
+          {% endwith %}
+        </div>
+        
+
+        <!-- CUADRO DE LOGS -->
+        <div id="logs" class="logs-container"></div>
+
+        <div id="metrics" style="display:none;"></div>
+        <div id="errors"></div>
+
+        <a href="{{ url_for('main.model_info') }}" class="button" id="enterBtn">
+          Volver
+        </a>
+      </div>
+
+
+    </section>
+  </div>
+
+  <!-- SOCKET.IO -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.js"></script>
+
+  <script>
+    if (!window.socket) {
+      const SERVER_URL = "/pipeline";
+
+      window.socket = io(SERVER_URL, {
+        transports: ['websocket', 'polling'],
+      });
+      window.socket.emit("mensaje_cliente", "HOLA QUE TAL")
+    }
+
+    const logsContainer = document.getElementById("logs");
+    const jobsMap = {};
+
+    socket.on("connect", () => {
+      console.log("🔥 Conectado al namespace /pipeline:", socket.id);
+    });
+
+    socket.on("job_log", (data) => {
+      let jobDiv = jobsMap[data.job];
+      console.log("job_log recibido:", data);
+      if (!jobDiv) {
+        jobDiv = document.createElement("div");
+        jobDiv.classList.add("job-box");
+
+        const title = document.createElement("div");
+        title.classList.add("job-title");
+        title.textContent = `${data.job} (${data.status})`;
+
+        const logContent = document.createElement("div");
+        logContent.classList.add("log-line");
+
+        jobDiv.appendChild(title);
+        jobDiv.appendChild(logContent);
+        logsContainer.appendChild(jobDiv);
+
+        jobsMap[data.job] = jobDiv;
+      } else {
+        jobDiv.querySelector(".job-title").textContent = `${data.job} (${data.status})`;
+      }
+
+      const logContent = jobDiv.querySelector(".log-line");
+      logContent.innerHTML += data.log.replace(/\n/g, "<br>");
+
+      logsContainer.scrollTop = logsContainer.scrollHeight;
+    });
+
+    socket.on("error", (data) => {
+      const errDiv = document.createElement("div");
+      errDiv.classList.add("error-message");
+      errDiv.textContent = data.message;
+      document.getElementById("errors").appendChild(errDiv);
+    });
+  </script>
+
+</body>
+
+</html>

@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Comparativa de Modelos</title>
+
+
+  <style>
+    :root {
+      --bg: #0b1016;
+      --panel: #0f1a24;
+      --panel-2: #0b1320;
+      --accent: #00d1ff;
+      --accent-2: #00ffa6;
+      --text: #e9f1f5;
+      --muted: #8aa4b5;
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    html,
+    body {
+      height: 100%
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Roboto, Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(1200px 800px at 70% -10%, #123 0%, var(--bg) 60%),
+        linear-gradient(#0a0f14, #06090d);
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 60px auto;
+      padding: 0 16px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 40px;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .panel {
+      background: linear-gradient(180deg, rgba(255, 255, 255, .02), rgba(0, 0, 0, .25)),
+        linear-gradient(180deg, var(--panel), var(--panel-2));
+      border: 1px solid rgba(0, 209, 255, .15);
+      border-radius: 18px;
+      box-shadow:
+        0 0 0 1px rgba(0, 209, 255, .05) inset,
+        0 10px 30px rgba(0, 0, 0, .45);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    @media(max-width:900px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .left {
+      display: grid;
+      grid-template-rows: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .card {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: .04em;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, .08);
+      background: linear-gradient(180deg, rgba(255, 255, 255, .06), rgba(0, 0, 0, .25));
+      box-shadow: 0 6px 20px rgba(0, 0, 0, .35);
+      transition: transform .2s ease, box-shadow .3s ease;
+
+      /* --- CAMBIOS NECESARIOS --- */
+      position: relative;
+      overflow: hidden;
+      min-height: 160px;
+      cursor: pointer;
+      /* feedback de interactividad */
+    }
+
+    /* Contenedor del contenido */
+    .card-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transform: translateY(0);
+      transition: transform .35s ease;
+      text-align: center;
+    }
+
+    /* Efecto: subir contenido al hover */
+    .card:hover .card-content {
+      transform: translateY(-14px);
+    }
+
+    /* El mismo efecto de subir contenido cuando está activa */
+    .card.active .card-content {
+      transform: translateY(-14px);
+    }
+
+    /* Muestra la descripción cuando está activa */
+    .card.active .desc {
+      opacity: 1;
+      max-height: 300px;
+      padding-top: 10px;
+    }
+
+    /* Opcional accesible: indicar foco con teclado */
+    .card:focus-visible {
+      outline: 2px solid rgba(0, 209, 255, .6);
+      outline-offset: 4px;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, .5),
+        0 0 0 6px rgba(0, 209, 255, .25);
+    }
+
+    .classic {
+      color: var(--accent);
+    }
+
+    .nn {
+      color: var(--accent-2);
+      font-size: 22px;
+    }
+
+    .first-info {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+    }
+
+    .just-checks {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      width: 80%;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .just-buttons {
+      display: flex;
+      flex-direction: column;
+      width: 20%;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .continue-button {
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, .08);
+      background: linear-gradient(180deg, rgba(255, 255, 255, .06), rgba(195, 255, 208, 0.25));
+      box-shadow: 0 6px 20px rgba(0, 0, 0, .35);
+      transition: transform .2s ease, box-shadow .3s ease;
+      color: #00d1ff;
+      margin: 20px;
+      height: 40px;
+      text-align: center;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      padding: 0 16px;
+    }
+
+    .continue-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, .5),
+        0 0 0 6px rgba(0, 209, 255, .25);
+    }
+
+    /* Descripciones */
+    .card .desc {
+      opacity: 0;
+      max-height: 0;
+      overflow: hidden;
+      font-size: 12px;
+      color: whitesmoke;
+      padding: 0 12px;
+      transition: opacity .35s ease, max-height .35s ease, padding .25s ease;
+      text-align: center;
+    }
+
+    .card:hover .desc {
+      opacity: 1;
+      max-height: 300px;
+      padding-top: 10px;
+    }
+
+    @media (max-width: 768px) {
+      .first-info {
+        flex-wrap: wrap;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        /* Poner elementos uno debajo del otro */
+      }
+    }
+
+    #enterBtn {
+      margin-top: 0%;
+    }
+
+    #info {
+      margin-bottom: 0%;
+    }
+
+    #checkboxes {
+      zoom: 0.7;
+    }
+
+    .panel {
+      padding: 8px;
+    }
+
+    .just-checks {
+      justify-content: flex-start;
+    }
+
+    .just-buttons {
+      justify-items: flex-end;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Modelos clásicos vs Redes neuronales</h1>
+
+    <div class="first-info">
+      <div>
+        <label for="info">Nuestros modelos:</label>
+        <p id="info">
+          A continuacion se presentan los distintos modelos entrenados para el procesamiento de reseñas en el cine.
+          Estos modelos han tenido un entrenamiento especifico con las bases de datos de IMDB y SST-2 de Hugging Face.
+          Gracias a este entrenamiento permiten hacer una deteccion de sentimiento <strong>positivo o negativo</strong>
+          con gran precision.
+          <br>
+          En concreto las posibilidades son de <strong>3 modelos clasicos</strong> frente a 1 red neuronal actual.
+          <br>
+          <br>
+        </p>
+      </div>
+      <a href="{{ url_for('main.base') }}" class="continue-button" id="enterBtn">
+        Configuracion
+      </a>
+    </div>
+    <section class="panel">
+      <div class="grid">
+        <div class="left">
+          <div class="card classic" tabindex="0" role="button" aria-expanded="false">
+            <div class="card-content">
+              <h2>Regresión Logística</h2>
+              <p class="desc"> Modelo estadístico lineal
+                utilizado para
+                problemas de clasificación binaria. Es eficiente, interpretable
+                y funciona bien cuando la relación entre variables es aproximadamente lineal.</p>
+            </div>
+          </div>
+
+          <div class="card classic" tabindex="0" role="button" aria-expanded="false">
+            <div class="card-content">
+              <h2>Naive Bayes</h2>
+              <p class="desc">Clasificador probabilístico basado en el teorema de Bayes y la suposición de independencia
+                entre
+                variables. Destaca por su rapidez y buen rendimiento en tareas de clasificación de texto.</p>
+            </div>
+          </div>
+
+          <div class="card classic" tabindex="0" role="button" aria-expanded="false">
+            <div class="card-content">
+              <h2 style="text-align: center;">Support Vector Machine (SVM)</h2>
+              <p class="desc"> Modelo de aprendizaje supervisado que busca el hiperplano óptimo que separa las clases
+                maximizando el
+                margen. Es eficaz en espacios de alta dimensionalidad.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card nn" tabindex="0" role="button" aria-expanded="false">
+          <div class="card-content">
+            <h2>DistilBERT</h2>
+            <p class="desc">Modelo de lenguaje basado en transformers, optimizado a partir de BERT mediante técnicas de
+              destilación.
+              Mantiene un alto rendimiento en comprensión del lenguaje natural con menor coste computacional.</p>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+    <br>
+    <section class="panel">
+      <div>
+        <h3>Seleccion de Modelos:</h3>
+        <hr>
+
+      </div>
+      <div style="display: flex; flex-direction: row;width: 95%; flex-wrap: wrap;" id="checkboxes">
+        <div class="just-checks">
+          <div style="height: 100%; margin-right: 5%;">
+            <label style="display: flex; align-items: center; gap: 4.6px;"><input type="checkbox"
+                style="scale: 3; margin: 10%;transform-origin: left center; vertical-align: middle; margin-right: 16%;">
+              Regresion Logistica</label><br>
+            <label style="display: flex; align-items: center; gap: 4.6px;"><input type="checkbox"
+                style="scale: 3; margin: 10%;transform-origin: left center; vertical-align: middle; margin-right: 16%;">
+              Naive Bayes</label><br>
+            <label style="display: flex; align-items: center; gap: 4.6px;"><input type="checkbox"
+                style="scale: 3; margin: 10%;transform-origin: left center; vertical-align: middle; margin-right: 16%;">
+              Support Vector Machine</label>
+          </div>
+          <div class="columna derecha" style="margin-left: 5%;">
+            <label style="display: flex; align-items: center; gap: 4.6px;"><input type="checkbox"
+                style="scale: 3; margin: 10%;transform-origin: left center; vertical-align: middle; margin-right: 35%;">
+              DistillBERT</label>
+          </div>
+
+
+        </div>
+        <div class="just-buttons">
+          <a href="{{ url_for('main.graphs') }}" class="continue-button"
+            style="margin-top: 10%; margin-bottom: 5%; height: 35%;">
+            Generar Reporte
+          </a>
+          <button class="continue-button" style="margin-top: 10%; margin-bottom: 5%; height: 35%;">Analizar
+            Reseña</button>
+        </div>
+      </div>
+
+    </section>
+    <br>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.js"></script>
+
+  <!-- Script corregido: hover + selección con click y teclado -->
+  <script>
+    if (!window.socket) {
+      const SERVER_URL = "/model_info";
+
+      window.socket = io(SERVER_URL, {
+        transports: ['websocket', 'polling'],
+      });
+    }
+
+    // Reusar la misma conexión
+    const socket = window.socket;
+    // URL del servidor
+
+
+    // Configuración de SocketIO
+
+
+    socket.on("connect", () => {
+      console.log("✅ Socket conectado:", socket.id);
+      console.log("📡 Namespace:", socket.nsp);
+    });
+
+    socket.on("connect_error", (err) => {
+      console.error("❌ Error de conexión:", err.message);
+    });
+
+    socket.on("disconnect", () => {
+      console.log("❎ Socket desconectado");
+    });
+
+    (function () {
+      const cards = document.querySelectorAll('.card');
+
+      function toggleCard(card) {
+        // Si quieres acordeón (solo una abierta), descomenta las 2 líneas siguientes:
+        // cards.forEach(c => { if (c !== card) c.classList.remove('active'); c.setAttribute('aria-expanded', 'false'); });
+        card.classList.toggle('active');
+        card.setAttribute('aria-expanded', card.classList.contains('active') ? 'true' : 'false');
+      }
+
+      cards.forEach(card => {
+        // Alterna al hacer clic
+        card.addEventListener('click', () => toggleCard(card));
+
+        // Permite activar con teclado (Enter o Espacio)
+        card.addEventListener('keydown', (e) => {
+          const key = e.key || e.code;
+          if (key === 'Enter' || key === ' ' || key === 'Spacebar' || key === 'Space') {
+            e.preventDefault(); // evita scroll con Space
+            toggleCard(card);
+          }
+        });
+      });
+    })();
+  </script>
+</body>
+
+</html>
