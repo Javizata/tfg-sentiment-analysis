@@ -31,3 +31,7 @@ def base():
 @main.route("/graphs")
 def graphs():
     return render_template("graphs.html", title="Gráficos")
+
+@main.route("/review")
+def review():
+    return render_template("review.html", title="Analisis")

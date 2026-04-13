@@ -12,7 +12,7 @@
       --bg: #0b1016;
       --panel: #0f1a24;
       --panel-2: #0b1320;
-      --accent: #00d1ff;
+      --accent: #4dbdd7;
       --accent-2: #00ffa6;
       --text: #e9f1f5;
       --muted: #8aa4b5;
@@ -31,6 +31,8 @@
       margin: 0;
       font-family: "Segoe UI", Roboto, Arial, sans-serif;
       color: var(--text);
+
+      zoom: 1.5;
       background:
         radial-gradient(1200px 800px at 70% -10%, #123 0%, var(--bg) 60%),
         linear-gradient(#0a0f14, #06090d);
@@ -227,8 +229,12 @@
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        /* Poner elementos uno debajo del otro */
       }
+
+      body {
+        zoom: 1;
+      }
+
     }
 
     #enterBtn {
@@ -239,7 +245,11 @@
       margin-bottom: 0%;
     }
 
-    #checkboxes {
+    .checkboxes {
+      display: flex;
+      flex-direction: row;
+      width: 95%;
+      flex-wrap: wrap;
       zoom: 0.7;
     }
 
@@ -330,23 +340,27 @@
         <hr>
 
       </div>
-      <div style="display: flex; flex-direction: row;width: 95%; flex-wrap: wrap;" id="checkboxes">
+      <div class="checkboxes">
         <div class="just-checks">
-          <div style="height: 100%; margin-right: 5%;">
-            <label style="display: flex; align-items: center; gap: 4.6px;"><input type="checkbox"
+          <div style=" margin-right: 5%;">
+            <label style="display: flex; align-items: center; gap: 8px;"><input type="checkbox"
                 style="scale: 3; margin: 10%;transform-origin: left center; vertical-align: middle; margin-right: 16%;">
               Regresion Logistica</label><br>
-            <label style="display: flex; align-items: center; gap: 4.6px;"><input type="checkbox"
+            <label style="display: flex; align-items: center; gap: 8px;"><input type="checkbox"
                 style="scale: 3; margin: 10%;transform-origin: left center; vertical-align: middle; margin-right: 16%;">
               Naive Bayes</label><br>
-            <label style="display: flex; align-items: center; gap: 4.6px;"><input type="checkbox"
+            <label style="display: flex; align-items: center; gap: 8px;"><input type="checkbox"
                 style="scale: 3; margin: 10%;transform-origin: left center; vertical-align: middle; margin-right: 16%;">
               Support Vector Machine</label>
           </div>
           <div class="columna derecha" style="margin-left: 5%;">
-            <label style="display: flex; align-items: center; gap: 4.6px;"><input type="checkbox"
-                style="scale: 3; margin: 10%;transform-origin: left center; vertical-align: middle; margin-right: 35%;">
+            <label style="display: flex; align-items: center; gap: 10px;margin-bottom: 12%;margin-top: 12%;"><input
+                type="checkbox"
+                style="scale: 3;transform-origin: left center; vertical-align: middle;margin-right: 16%;">
               DistillBERT</label>
+            <label style="display: flex; align-items: center; gap: 10px;margin-top: 12%"><input type="checkbox"
+                style="scale: 3;transform-origin: left center; vertical-align: middle;margin-right: 16%;">
+              DistillBERT + SST-2</label>
           </div>
 
 
@@ -356,8 +370,10 @@
             style="margin-top: 10%; margin-bottom: 5%; height: 35%;">
             Generar Reporte
           </a>
-          <button class="continue-button" style="margin-top: 10%; margin-bottom: 5%; height: 35%;">Analizar
-            Reseña</button>
+          <a href="{{ url_for('main.review') }}" class="continue-button"
+            style="margin-top: 10%; margin-bottom: 5%; height: 35%;">
+            Analizar Reseña
+          </a>
         </div>
       </div>
 
@@ -366,7 +382,6 @@
   </div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.js"></script>
 
-  <!-- Script corregido: hover + selección con click y teclado -->
   <script>
     if (!window.socket) {
       const SERVER_URL = "/model_info";
@@ -378,11 +393,6 @@
 
     // Reusar la misma conexión
     const socket = window.socket;
-    // URL del servidor
-
-
-    // Configuración de SocketIO
-
 
     socket.on("connect", () => {
       console.log("✅ Socket conectado:", socket.id);
@@ -401,8 +411,7 @@
       const cards = document.querySelectorAll('.card');
 
       function toggleCard(card) {
-        // Si quieres acordeón (solo una abierta), descomenta las 2 líneas siguientes:
-        // cards.forEach(c => { if (c !== card) c.classList.remove('active'); c.setAttribute('aria-expanded', 'false'); });
+        cards.forEach(c => { if (c !== card) c.classList.remove('active'); c.setAttribute('aria-expanded', 'false'); });
         card.classList.toggle('active');
         card.setAttribute('aria-expanded', card.classList.contains('active') ? 'true' : 'false');
       }

@@ -13,7 +13,7 @@
       --bg: #0b1016;
       --panel: #0f1a24;
       --panel-2: #0b1320;
-      --accent: #00d1ff;
+      --accent: #4dbdd7;
       --accent-2: #00ffa6;
       --danger: #ff3b3b;
       --text: #e9f1f5;
@@ -27,6 +27,7 @@
     html,
     body {
       margin: 0;
+      height: 100%;
       display: flex;
       flex-direction: column;
       font-family: "Segoe UI", Roboto, Arial, sans-serif;
@@ -43,16 +44,6 @@
       width: 100%;
       height: 100%;
     }
-
-    @media (max-width: 768px) {
-      .options {
-        flex-wrap: wrap;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-      }
-    }
-
 
     .container {
       width: 90%;
@@ -116,9 +107,6 @@
         0 0 0 6px rgba(0, 209, 255, .25);
     }
 
-    /* ========================= */
-    /* ERRORES */
-    /* ========================= */
     #errors {
       width: 100%;
       margin-top: 15px;
@@ -129,10 +117,6 @@
       font-weight: bold;
       margin-bottom: 4px;
     }
-
-    /* ========================= */
-    /* LOGS */
-    /* ========================= */
 
     .logs-container {
       background: #0f1a24;
@@ -168,6 +152,22 @@
       font-size: 0.50rem;
       line-height: 1.25rem;
     }
+
+    @media (max-width: 768px) {
+      .options {
+        flex-wrap: wrap;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+      }
+
+      body {
+        flex-wrap: wrap;
+        flex-direction: row;
+        height: auto;
+      }
+
+    }
   </style>
 </head>
 
@@ -183,7 +183,7 @@
     <section class="container">
       <div class="panel">
         <h2>Modelos Clásicos</h2>
-        <img src="{{ url_for('static', filename='img/Carga1.gif') }}" alt="Carga" style="width: 15%;">
+        <img src="{{ url_for('static', filename='img/Carga1.gif') }}" alt="Carga" style="width: 10%;">
         <div class="info">
           {% with messages = get_flashed_messages(with_categories=true) %}
           {% if messages %}
@@ -195,7 +195,7 @@
           {% endif %}
           {% endwith %}
         </div>
-        
+
 
         <!-- CUADRO DE LOGS -->
         <div id="logs" class="logs-container"></div>

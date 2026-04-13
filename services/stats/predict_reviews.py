@@ -57,7 +57,7 @@ def preprocess(text, nlp):
         if not t.is_stop and t.is_alpha and len(t) > 1
     )
 
-def predict_review(review, modelo):
+def predict_review(review, modelo:str = "logistic_imdb.pkl"):
     nlp,vectorizer, model = cargar_modelo(modelo)
     cleaned = clean_text(review)
     processed = preprocess(cleaned, nlp)
