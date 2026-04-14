@@ -4,7 +4,6 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 
   <title>Configuración</title>
 
@@ -27,7 +26,7 @@
     html,
     body {
       margin: 0;
-      height: 100%;
+      height: auto;
       display: flex;
       flex-direction: column;
       font-family: "Segoe UI", Roboto, Arial, sans-serif;
@@ -37,9 +36,17 @@
         linear-gradient(#0a0f14, #06090d);
     }
 
+    h1 {
+      text-align: center;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-size: 2.5rem;
+      margin-top: 30px;
+    }
+
     .options {
       display: flex;
-      flex-direction: row;
       justify-content: center;
       width: 100%;
       height: 100%;
@@ -49,28 +56,17 @@
       width: 90%;
       padding: 24px;
       display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10%;
-    }
-
-    h1 {
-      text-align: center;
-      letter-spacing: .06em;
-      text-transform: uppercase;
-      color: var(--muted);
-      font-size: 2.5rem;
+      justify-content: center;
     }
 
     .panel {
       background: linear-gradient(180deg, rgba(255, 255, 255, .02), rgba(0, 0, 0, .25)),
-        linear-gradient(180deg, var(--panel), var(--panel-2));
+                  linear-gradient(180deg, var(--panel), var(--panel-2));
       border: 1px solid rgba(0, 209, 255, .15);
       border-radius: 18px;
       box-shadow: 0 10px 30px rgba(0, 0, 0, .45);
       width: 100%;
-      height: 100%;
-      padding: 30px 20px;
+      padding: 30px 24px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -78,14 +74,12 @@
     }
 
     .info {
-      display: flex;
-      flex-direction: row;
-      flex-wrap: wrap;
-      margin-left: 2%;
       color: var(--muted);
+      text-align: center;
       width: 100%;
     }
 
+    /* ===== BOTÓN ===== */
     .button {
       border-radius: 14px;
       border: 1px solid rgba(255, 255, 255, .08);
@@ -93,122 +87,123 @@
       box-shadow: 0 6px 20px rgba(0, 0, 0, .35);
       transition: transform .2s ease, box-shadow .3s ease;
       color: var(--accent);
-      font-size: 1.2rem;
-      padding: 12px 24px;
+      font-size: 1.1rem;
+      padding: 10px 20px;
       cursor: pointer;
-      width: fit-content;
-      text-align: center;
-
+      text-decoration: none;
     }
 
-    .continue-button:hover {
+    .button:hover {
       transform: translateY(-3px);
       box-shadow: 0 12px 30px rgba(0, 0, 0, .5),
-        0 0 0 6px rgba(0, 209, 255, .25);
+                  0 0 0 6px rgba(0, 209, 255, .25);
     }
 
-    #errors {
-      width: 100%;
-      margin-top: 15px;
+    /* ===== LOADING / FINISHED ===== */
+    #loadingGif {
+      width: 80px;
     }
 
-    .error-message {
-      color: var(--danger);
+    #finishedText {
+      display: none;
+      font-size: 1.2rem;
       font-weight: bold;
-      margin-bottom: 4px;
+      color: var(--accent-2);
     }
 
+    /* ===== LOGS ===== */
     .logs-container {
       background: #0f1a24;
       border: 1px solid rgba(0, 209, 255, 0.15);
       border-radius: 12px;
       padding: 16px;
-      margin-top: 20px;
+      margin-top: 10px;
       width: 100%;
       height: 450px;
-      overflow-y: auto;
       overflow-y: auto;
       font-family: monospace;
       white-space: pre-wrap;
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
     }
 
+    /* ✅ SCROLL PERSONALIZADO */
+    .logs-container::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    .logs-container::-webkit-scrollbar-track {
+      background: #0b1320;
+      border-radius: 10px;
+    }
+
+    .logs-container::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, #00d1ff, #00ffa6);
+      border-radius: 10px;
+    }
+
+    .logs-container::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(180deg, #00ffa6, #00d1ff);
+    }
+
     .job-box {
-      background: rgba(0, 0, 0, 0.25);
-      border-left: 4px solid #00d1ff;
-      padding: 12px;
-      margin-bottom: 15px;
+      background: rgba(0, 0, 0, 0.35);
+      border-left: 4px solid var(--accent);
+      padding: 10px 12px;
+      margin-bottom: 12px;
       border-radius: 8px;
     }
 
     .job-title {
       font-weight: bold;
       margin-bottom: 6px;
-      color: #00d1ff;
+      color: var(--accent);
     }
 
     .log-line {
-      color: #e9f1f5;
-      font-size: 0.50rem;
-      line-height: 1.25rem;
+      color: var(--text);
+      font-size: 0.75rem;
+      line-height: 1.2rem;
+      overflow: auto;
     }
 
-    @media (max-width: 768px) {
-      .options {
-        flex-wrap: wrap;
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: center;
-      }
+    #errors {
+      width: 100%;
+    }
 
-      body {
-        flex-wrap: wrap;
-        flex-direction: row;
-        height: auto;
-      }
-
+    .error-message {
+      color: var(--danger);
+      font-weight: bold;
+      margin-top: 8px;
     }
   </style>
 </head>
 
 <body>
 
-  <h1> Panel de Control</h1>
-
-
+  <h1>Panel de Control</h1>
 
   <div class="options">
-
-    <!-- PANEL 1: PIPELINE -->
     <section class="container">
       <div class="panel">
-        <h2>Modelos Clásicos</h2>
-        <img src="{{ url_for('static', filename='img/Carga1.gif') }}" alt="Carga" style="width: 10%;">
-        <div class="info">
-          {% with messages = get_flashed_messages(with_categories=true) %}
-          {% if messages %}
-          <ul class="flash-messages">
-            {% for category, message in messages %}
-            <li class="{{ category }}">{{ message }}</li>
-            {% endfor %}
-          </ul>
-          {% endif %}
-          {% endwith %}
-        </div>
 
+        <h2 id="pipelineTitle">Modelos Clásicos</h2>
 
-        <!-- CUADRO DE LOGS -->
+        <!-- GIF DE CARGA -->
+        <img id="loadingGif" src="{{ url_for('static', filename='img/Carga1.gif') }}" alt="Carga">
+
+        <!-- TEXTO FINISHED -->
+        <div id="finishedText">✅ Entrenamiento finalizado</div>
+
+        <!-- LOGS -->
         <div id="logs" class="logs-container"></div>
 
-        <div id="metrics" style="display:none;"></div>
         <div id="errors"></div>
 
-        <a href="{{ url_for('main.model_info') }}" class="button" id="enterBtn">
+        <a href="{{ url_for('main.model_info') }}" class="button">
           Volver
         </a>
+
       </div>
-
-
     </section>
   </div>
 
@@ -217,24 +212,31 @@
 
   <script>
     if (!window.socket) {
-      const SERVER_URL = "/pipeline";
-
-      window.socket = io(SERVER_URL, {
-        transports: ['websocket', 'polling'],
+      window.socket = io("/pipeline", {
+        transports: ["websocket", "polling"]
       });
-      window.socket.emit("mensaje_cliente", "HOLA QUE TAL")
     }
 
+    const socket = window.socket;
     const logsContainer = document.getElementById("logs");
     const jobsMap = {};
 
     socket.on("connect", () => {
-      console.log("🔥 Conectado al namespace /pipeline:", socket.id);
+      console.log("🔥 Conectado a /pipeline:", socket.id);
+    });
+
+    socket.on("artifacts_ready", (data) => {
+      console.log("✅ Artifacts ready:", data);
+
+      document.getElementById("loadingGif").style.display = "none";
+      document.getElementById("finishedText").style.display = "block";
+      document.getElementById("pipelineTitle").textContent =
+        "Modelos Clásicos (Completado)";
     });
 
     socket.on("job_log", (data) => {
       let jobDiv = jobsMap[data.job];
-      console.log("job_log recibido:", data);
+
       if (!jobDiv) {
         jobDiv = document.createElement("div");
         jobDiv.classList.add("job-box");
@@ -252,7 +254,8 @@
 
         jobsMap[data.job] = jobDiv;
       } else {
-        jobDiv.querySelector(".job-title").textContent = `${data.job} (${data.status})`;
+        jobDiv.querySelector(".job-title").textContent =
+          `${data.job} (${data.status})`;
       }
 
       const logContent = jobDiv.querySelector(".log-line");
@@ -270,5 +273,4 @@
   </script>
 
 </body>
-
 </html>

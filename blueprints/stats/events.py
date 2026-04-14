@@ -2,7 +2,7 @@ import json
 from flask_socketio import emit
 from helpers import socketio
 from plotly.utils import PlotlyJSONEncoder
-
+from app_state import APP_STATE
 from services.stats.charts import cargar_todo
 from services.stats.predict_reviews import predict_review
 
@@ -28,18 +28,18 @@ def generate_graphs():
 def generate_resena(text):
     print("Reseña solicitada")
     print(text)
-    sentiment, confidence, probabilities = predict_review(text["text"])
-    print(sentiment, confidence, probabilities)
-    emit(
-        "result",
-        {
+    results = []
+    for model in APP_STATE["models_to_use"]:
+        sentiment, conf, probs = predict_review(text["text"], model)
+        results.append({
+            "model": model,
             "sentiment": sentiment,
-            "confidence": float(confidence) if confidence is not None else None,
-            "probabilities": probabilities.tolist() if probabilities is not None else None
-        },
-        namespace="/stats"
-    )
-
+            "confidence": conf,
+            "probabilities": probs.tolist() if probs is not None else None
+        })
+        print(sentiment, conf, probs)
+    emit("result", {"results": results}, namespace="/stats")
+    
 def emit_plot(event, fig):
     emit(
         event,

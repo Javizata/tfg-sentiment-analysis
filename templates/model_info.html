@@ -185,10 +185,10 @@
     .continue-button {
       border-radius: 14px;
       border: 1px solid rgba(255, 255, 255, .08);
-      background: linear-gradient(180deg, rgba(255, 255, 255, .06), rgba(195, 255, 208, 0.25));
+      background: linear-gradient(180deg, rgba(255, 255, 255, .06), rgba(255, 255, 255, 0.25));
       box-shadow: 0 6px 20px rgba(0, 0, 0, .35);
       transition: transform .2s ease, box-shadow .3s ease;
-      color: #00d1ff;
+      color: #4dbdd7;
       margin: 20px;
       height: 40px;
       text-align: center;
@@ -343,37 +343,42 @@
       <div class="checkboxes">
         <div class="just-checks">
           <div style=" margin-right: 5%;">
-            <label style="display: flex; align-items: center; gap: 8px;"><input type="checkbox"
+            <label style="display: flex; align-items: center; gap: 8px;"><input type="checkbox" name="models"
+                value="logistic_imdb"
                 style="scale: 3; margin: 10%;transform-origin: left center; vertical-align: middle; margin-right: 16%;">
               Regresion Logistica</label><br>
-            <label style="display: flex; align-items: center; gap: 8px;"><input type="checkbox"
+            <label style="display: flex; align-items: center; gap: 8px;"><input type="checkbox" name="models"
+                value="nb_imdb"
                 style="scale: 3; margin: 10%;transform-origin: left center; vertical-align: middle; margin-right: 16%;">
               Naive Bayes</label><br>
-            <label style="display: flex; align-items: center; gap: 8px;"><input type="checkbox"
+            <label style="display: flex; align-items: center; gap: 8px;"><input type="checkbox" name="models"
+                value="svm_imdb"
                 style="scale: 3; margin: 10%;transform-origin: left center; vertical-align: middle; margin-right: 16%;">
               Support Vector Machine</label>
           </div>
           <div class="columna derecha" style="margin-left: 5%;">
             <label style="display: flex; align-items: center; gap: 10px;margin-bottom: 12%;margin-top: 12%;"><input
-                type="checkbox"
+                type="checkbox" name="models" value="distilbert"
                 style="scale: 3;transform-origin: left center; vertical-align: middle;margin-right: 16%;">
-              DistillBERT</label>
+              DistilBERT</label>
             <label style="display: flex; align-items: center; gap: 10px;margin-top: 12%"><input type="checkbox"
+                name="models" value="distilbert_sst2"
                 style="scale: 3;transform-origin: left center; vertical-align: middle;margin-right: 16%;">
-              DistillBERT + SST-2</label>
+              DistilBERT + SST-2</label>
           </div>
 
 
         </div>
         <div class="just-buttons">
-          <a href="{{ url_for('main.graphs') }}" class="continue-button"
-            style="margin-top: 10%; margin-bottom: 5%; height: 35%;">
+
+          <button class="continue-button" onclick="enviarSeleccion('graphs')">
             Generar Reporte
-          </a>
-          <a href="{{ url_for('main.review') }}" class="continue-button"
-            style="margin-top: 10%; margin-bottom: 5%; height: 35%;">
+          </button>
+
+          <button class="continue-button" onclick="enviarSeleccion('review')">
             Analizar Reseña
-          </a>
+          </button>
+
         </div>
       </div>
 
@@ -397,6 +402,7 @@
     socket.on("connect", () => {
       console.log("✅ Socket conectado:", socket.id);
       console.log("📡 Namespace:", socket.nsp);
+      socket.emit("get_app_state")
     });
 
     socket.on("connect_error", (err) => {
@@ -430,6 +436,35 @@
         });
       });
     })();
+
+    function enviarSeleccion(destino) {
+      const seleccionados = Array.from(
+        document.querySelectorAll('input[name="models"]:checked')
+      ).map(cb => cb.value);
+
+      if (seleccionados.length === 0) {
+        alert("Selecciona al menos un modelo");
+        return;
+      }
+
+      // Enviar selección al backend
+      socket.emit("selected_models", {
+        models: seleccionados,
+        next: destino
+      });
+
+      console.log("Modelos enviados:", seleccionados);
+    }
+
+    socket.on("redirect", (data) => {
+      console.log("➡️ Redirigiendo a:", data.url);
+      window.location.href = data.url;
+    });
+
+    socket.on("app_state", (data) =>{
+      console.log(data)
+    })
+
   </script>
 </body>
 
