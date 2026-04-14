@@ -18,6 +18,8 @@
             --accent: #4dbdd7;
             --accent-2: #00ffa6;
             --text: #e9f1f5;
+            --danger: #ff3b3b;
+
             --muted: #8aa4b5;
         }
 
@@ -238,15 +240,44 @@
             Plotly.newPlot("matriz_confusion", fig.data, fig.layout, { responsive: true, displayModeBar: false })
         );
         socket.on("result", (data) => {
-            console.log("📥 RESULTADO RECIBIDO:", data);
+            console.log("📥 RESULTADOS RECIBIDOS:", data);
 
             const divResultado = document.getElementById("desc");
 
-            divResultado.innerHTML = `
-                <h3>Resultado del análisis</h3>
-                <p><strong>Sentimiento:</strong> ${data.sentiment}</p>
-                <p><strong>Confianza:</strong> ${(data.confidence * 100).toFixed(2)}%</p>
-            `;
+            // Limpiar contenido previo
+            divResultado.innerHTML = `<h3>Resultado del análisis</h3>`;
+
+            data.results.forEach(res => {
+
+                let confidenceText = "No disponible (SVM)";
+                if (res.confidence !== null && res.confidence !== undefined) {
+                    confidenceText = `${(res.confidence * 100).toFixed(2)}%`;
+                }
+
+                const badgeColor =
+                    res.sentiment === "Positive"
+                        ? "var(--accent-2)"
+                        : "var(--danger)";
+
+                divResultado.innerHTML += `
+                <div style="
+                margin-top: 12px;
+                padding: 10px;
+                border-radius: 10px;
+                border: 1px solid rgba(255,255,255,.15);
+                background: rgba(0,0,0,.25);
+                ">
+                <p><strong>Modelo:</strong> ${res.model}</p>
+                <p>
+                    <strong>Sentimiento:</strong>
+                    <span style="color:${badgeColor}; font-weight:bold">
+                    ${res.sentiment}
+                    </span>
+                </p>
+                <p><strong>Confianza:</strong> ${confidenceText}</p>
+                </div>
+                `;
+            });
         });
 
         function analizarResena() {
