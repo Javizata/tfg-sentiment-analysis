@@ -5,6 +5,8 @@ from plotly.utils import PlotlyJSONEncoder
 from app_state import APP_STATE
 from services.stats.charts import cargar_todo
 from services.stats.predict_reviews import predict_review
+from services.models.distilbert_registry import predict_distilbert
+
 
 @socketio.on("connect", namespace="/stats")
 def handle_connect():
@@ -13,16 +15,33 @@ def handle_connect():
 
 @socketio.on("report", namespace="/stats")
 def generate_graphs():
-    print("Gráficos solicitados")
-    fg1,fg2,fg3,fg4 = cargar_todo()
-    
-    emit_plot("grafico_lineas", fg1)
+    print("📊 Gráficos solicitados")
 
-    emit_plot("grafico_barras", fg2)
+    # 1️⃣ Modelos seleccionados por el usuario
+    models_selected = APP_STATE.get("models_to_use", [])
 
-    emit_plot("tabla", fg3)
+    if not models_selected:
+        emit("error", {"message": "No hay modelos seleccionados"})
+        return
 
-    emit_plot("matriz_confusion", fg4)
+    # 2️⃣ Generar gráficos dinámicamente
+    (
+        fig_barras,
+        fig_radar,
+        fig_tabla,
+        fig_heatmap,
+        fig_ranking,
+        fig_precision_recall
+    ) = cargar_todo(models_selected)
+
+    # 3️⃣ Emitir cada gráfico al frontend
+    emit_plot("grafico_barras", fig_barras)
+    emit_plot("radar", fig_radar)
+    emit_plot("tabla", fig_tabla)
+    emit_plot("heatmap", fig_heatmap)
+    emit_plot("ranking", fig_ranking)
+    emit_plot("precision_recall", fig_precision_recall)
+
 
 @socketio.on("analizar_resena", namespace="/stats")
 def generate_resena(text):
@@ -30,12 +49,16 @@ def generate_resena(text):
     print(text)
     results = []
     for model in APP_STATE["models_to_use"]:
-        sentiment, conf, probs = predict_review(text["text"], model)
+        
+        if model.startswith("distilbert"):
+            sentiment, conf, probs = predict_distilbert(text["text"], model)
+        else:
+            sentiment, conf, probs = predict_review(text["text"], model)
         results.append({
             "model": model,
             "sentiment": sentiment,
             "confidence": conf,
-            "probabilities": probs.tolist() if probs is not None else None
+            "probabilities": probs if probs is not None else None
         })
         print(sentiment, conf, probs)
     emit("result", {"results": results}, namespace="/stats")

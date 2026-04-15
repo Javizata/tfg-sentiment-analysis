@@ -3,6 +3,7 @@ from config import Config
 from helpers import socketio
 from app_state import APP_STATE
 from services.models.model_registry import load_classic_models
+from services.models.distilbert_registry import load_distilbert_models
 from services.models.artifact_state import update_app_state
 # Importar rutas HTTP
 from blueprints.main.routes import main
@@ -35,7 +36,8 @@ def create_app():
 
     if APP_STATE["classic_ready"]:
         load_classic_models()
-
+    if APP_STATE["distilbert_ready"]:
+        load_distilbert_models()
     return app
 
 

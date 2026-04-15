@@ -194,20 +194,22 @@
         <button class="continue-button">Descargar Red Neuronal</button>
         <div class="new-neural">
 
-          <input type="file" name="red" id="redN">
 
+          <form action="/upload_distilbert" method="POST" enctype="multipart/form-data">
+            <input type="file" name="file" accept=".zip">
+            <button type="submit" class="continue-button">Subir modelos DistilBERT</button>
+          </form </div>
         </div>
-      </div>
 
-      {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-      <ul class="flash-messages">
-        {% for category, message in messages %}
-        <li class="{{ category }}">{{ message }}</li>
-        {% endfor %}
-      </ul>
-      {% endif %}
-      {% endwith %}
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <ul class="flash-messages">
+          {% for category, message in messages %}
+          <li class="{{ category }}">{{ message }}</li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+        {% endwith %}
     </section>
   </div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.js"></script>

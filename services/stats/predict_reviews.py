@@ -22,10 +22,7 @@ def predict_review(text, model_name):
     
     if registry.NLP is None or registry.VECTORIZER is None or not registry.MODELS:
         registry.load_classic_models()
-
-    if model_name not in registry.MODELS:
-        raise ValueError(f"Model not loaded: {model_name}")
-
+        
     if model_name not in registry.MODELS:
         raise ValueError(f"Model not loaded: {model_name}")
     print("text",text)
@@ -38,7 +35,11 @@ def predict_review(text, model_name):
     pred = model.predict(X)[0]
     sentiment = "Positive" if pred == 1 else "Negative"
 
-    probs = model.predict_proba(X)[0] if hasattr(model, "predict_proba") else None
-    confidence = float(max(probs)) if probs is not None else None
+    if hasattr(model, "predict_proba"):
+            probs = model.predict_proba(X)[0].tolist()
+            confidence = float(max(probs))
+    else:
+        probs = None
+        confidence = None
 
     return sentiment, confidence, probs
