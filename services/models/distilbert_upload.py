@@ -1,7 +1,9 @@
-import os
+import os, time
+import shutil
 import zipfile
+
 from flask import request, jsonify
-from services.models.distilbert_registry import load_distilbert_models
+from services.models.distilbert_registry import load_distilbert_models, unload_distilbert_models
 from services.models.artifact_state import update_app_state
 BASE_DIR = os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 ARTIFACTS_DIR = os.path.join(BASE_DIR, "artifacts")
@@ -11,8 +13,22 @@ ALLOWED_EXTENSIONS = {"zip"}
 def allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
+def clean_old_distilbert_models():
+    """
+    Elimina todas las carpetas DistilBERT existentes en artifacts/
+    """
+    unload_distilbert_models()
+    time.sleep(2)
+    for entry in os.listdir(ARTIFACTS_DIR):
+        if entry.startswith("distilbert_") and os.path.isdir(
+            os.path.join(ARTIFACTS_DIR, entry)
+        ):
+            shutil.rmtree(os.path.join(ARTIFACTS_DIR, entry))
+            print(f"🗑️ Eliminado modelo DistilBERT antiguo: {entry}")
+
 
 def upload_distilbert_zip():
+    clean_old_distilbert_models()
     if "file" not in request.files:
         return jsonify({"error": "No file part"}), 400
 
