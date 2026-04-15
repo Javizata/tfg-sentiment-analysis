@@ -356,16 +356,23 @@
                 style="scale: 3; margin: 10%;transform-origin: left center; vertical-align: middle; margin-right: 16%;">
               Support Vector Machine</label>
           </div>
+
           <div class="columna derecha" style="margin-left: 5%;">
-            <label style="display: flex; align-items: center; gap: 10px;margin-bottom: 12%;margin-top: 12%;"><input
-                type="checkbox" name="models" value="distilbert"
-                style="scale: 3;transform-origin: left center; vertical-align: middle;margin-right: 16%;">
-              DistilBERT</label>
-            <label style="display: flex; align-items: center; gap: 10px;margin-top: 12%"><input type="checkbox"
-                name="models" value="distilbert_sst2"
-                style="scale: 3;transform-origin: left center; vertical-align: middle;margin-right: 16%;">
-              DistilBERT + SST-2</label>
+
+            <label style="display: flex; align-items: center; gap: 10px; margin-bottom: 12%; margin-top: 12%;">
+              <input type="checkbox" name="models" value="distilbert_imdb_model"
+                style="scale: 3; transform-origin: left center; margin-right: 16%;">
+              DistilBERT (IMDB)
+            </label>
+
+            <label style="display: flex; align-items: center; gap: 10px; margin-top: 12%;">
+              <input type="checkbox" name="models" value="distilbert_sst2_finetuned_model"
+                style="scale: 3; transform-origin: left center; margin-right: 16%;">
+              DistilBERT + SST‑2
+            </label>
+
           </div>
+
 
 
         </div>
@@ -461,7 +468,7 @@
       window.location.href = data.url;
     });
 
-    socket.on("app_state", (data) =>{
+    socket.on("app_state", (data) => {
       console.log(data)
     })
 

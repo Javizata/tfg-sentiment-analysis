@@ -48,7 +48,6 @@
       color: var(--muted);
     }
 
-    /* PANEL PRINCIPAL */
     .panel {
       background: linear-gradient(180deg, rgba(255, 255, 255, .02), rgba(0, 0, 0, .25)),
         linear-gradient(180deg, var(--panel), var(--panel-2));
@@ -60,7 +59,6 @@
       padding: 24px;
     }
 
-    /* CONTROLES */
     .controls {
       display: flex;
       justify-content: center;
@@ -86,27 +84,18 @@
         0 0 0 6px rgba(0, 209, 255, .25);
     }
 
-    /* GRID */
     .grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 24px;
     }
 
-    @media(max-width:900px) {
-      .grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    /* CARDS */
     .card {
       border-radius: 14px;
       border: 1px solid rgba(255, 255, 255, .08);
       background: linear-gradient(180deg, rgba(255, 255, 255, .06), rgba(0, 0, 0, .25));
       box-shadow: 0 6px 20px rgba(0, 0, 0, .35);
       padding: 16px;
-      position: relative;
     }
 
     .card h3 {
@@ -117,10 +106,15 @@
       letter-spacing: .06em;
     }
 
-    /* PLOT */
     .plot {
       width: 100%;
       min-height: 300px;
+    }
+
+    @media (max-width: 700px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -141,68 +135,80 @@
       <div class="grid">
 
         <div class="card">
-          <h3>Gráfico de Líneas</h3>
-          <div id="grafico_lineas" class="plot"></div>
-        </div>
-
-        <div class="card">
-          <h3>Gráfico de Barras</h3>
+          <h3>Comparación de Métricas</h3>
           <div id="grafico_barras" class="plot"></div>
+          <p>Compara de manera directa las principales métricas de rendimiento entre los modelos seleccionados,
+            permitiendo identificar diferencias cuantitativas de forma inmediata.
+          </p>
         </div>
 
         <div class="card">
-          <h3>Tabla de Datos</h3>
+          <h3>Heatmap de Métricas</h3>
+          <div id="heatmap" class="plot"></div>
+          <p>PEl mapa de calor facilita la comparación visual de todas las métricas simultáneamente, destacando patrones
+            de rendimiento y diferencias relativas entre modelos.
+          </p>
+        </div>
+
+        <div class="card">
+          <h3>Tabla Comparativa</h3>
           <div id="tabla" class="plot"></div>
+          <p> Facilita la comparación visual de todas las métricas simultáneamente.
+          </p>
         </div>
 
         <div class="card">
-          <h3>Matriz de Confusión</h3>
-          <div id="matriz_confusion" class="plot"></div>
+          <h3>Perfil de Rendimiento</h3>
+          <div id="radar" class="plot"></div>
+          <p> El diagrama radar permite analizar el equilibrio global de cada modelo, mostrando su comportamiento
+            conjunto en términos de accuracy, precision, recall y F1‑score.
+          </p>
+        </div>
+
+        <div class="card">
+          <h3>Ranking por F1-score</h3>
+          <div id="ranking" class="plot"></div>
+          <p>Permite identificar de forma clara el modelo con mejor equilibrio entre precisión y exhaustividad</p>
+        </div>
+
+        <div class="card">
+          <h3>Precision vs Recall</h3>
+          <div id="precision_recall" class="plot"></div>
+          <p>Representa el compromiso entre ambas métricas, proporcionando una visión más profunda del comportamiento de
+            los modelos ante falsos positivos y falsos negativos.
+          </p>
         </div>
 
       </div>
     </section>
   </div>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.js"></script>
+
   <script>
-    if (!window.socket) {
-      const SERVER_URL = "/stats";
+    const socket = io("/stats", { transports: ["websocket", "polling"] });
 
-      window.socket = io(SERVER_URL, {
-        transports: ['websocket', 'polling'],
-      });
-    }
-    // Reusar la misma conexión
-    const socket = window.socket;
-    // URL del servidor
-    socket.on("connect", () => {
-      console.log("✅ Socket conectado:", socket.id);
-      console.log("📡 Namespace:", socket.nsp);
-    });
+    socket.on("grafico_barras", fig =>
+      Plotly.newPlot("grafico_barras", fig.data, fig.layout, { displayModeBar: false, responsive: true })
+    );
 
-    socket.on("connect_error", (err) => {
-      console.error("❌ Error de conexión:", err.message);
-    });
+    socket.on("heatmap", fig =>
+      Plotly.newPlot("heatmap", fig.data, fig.layout, { displayModeBar: false, responsive: true })
+    );
 
-    socket.on("disconnect", () => {
-      console.log("❎ Socket desconectado");
-    });
+    socket.on("tabla", fig =>
+      Plotly.newPlot("tabla", fig.data, fig.layout, { displayModeBar: false, responsive: true })
+    );
 
-    socket.on("grafico_lineas", fig => {
-      Plotly.newPlot("grafico_lineas", fig.data, fig.layout, { displayModeBar: false, responsive: true });
-    });
+    socket.on("radar", fig =>
+      Plotly.newPlot("radar", fig.data, fig.layout, { displayModeBar: false, responsive: true })
+    );
 
-    socket.on("grafico_barras", fig => {
-      Plotly.newPlot("grafico_barras", fig.data, fig.layout, { displayModeBar: false, responsive: true });
-    });
+    socket.on("ranking", fig =>
+      Plotly.newPlot("ranking", fig.data, fig.layout, { displayModeBar: false, responsive: true })
+    );
 
-    socket.on("tabla", fig => {
-      Plotly.newPlot("tabla", fig.data, fig.layout, { displayModeBar: false, responsive: true });
-    });
-
-    socket.on("matriz_confusion", fig => {
-      Plotly.newPlot("matriz_confusion", fig.data, fig.layout, { displayModeBar: false, responsive: true });
-    });
+    socket.on("precision_recall", fig =>
+      Plotly.newPlot("precision_recall", fig.data, fig.layout, { displayModeBar: false, responsive: true })
+    );
   </script>
 
 </body>
