@@ -222,44 +222,49 @@
             });
         }
 
-        const socket = window.socket;
+        document.addEventListener("DOMContentLoaded", () => {
+            console.log("📄 HTML cargado → solicitando gráficos");
+            socket.emit("report");
+        });
 
-        socket.on("grafico_lineas", fig =>
-            Plotly.newPlot("grafico_lineas", fig.data, fig.layout, { responsive: true, displayModeBar: false })
-        );
+            const socket = window.socket;
 
-        socket.on("grafico_barras", fig =>
-            Plotly.newPlot("grafico_barras", fig.data, fig.layout, { responsive: true, displayModeBar: false })
-        );
+            socket.on("grafico_lineas", fig =>
+                Plotly.newPlot("grafico_lineas", fig.data, fig.layout, { responsive: true, displayModeBar: false })
+            );
 
-        socket.on("tabla", fig =>
-            Plotly.newPlot("tabla", fig.data, fig.layout, { responsive: true, displayModeBar: false })
-        );
+            socket.on("grafico_barras", fig =>
+                Plotly.newPlot("grafico_barras", fig.data, fig.layout, { responsive: true, displayModeBar: false })
+            );
 
-        socket.on("matriz_confusion", fig =>
-            Plotly.newPlot("matriz_confusion", fig.data, fig.layout, { responsive: true, displayModeBar: false })
-        );
-        socket.on("result", (data) => {
-            console.log("📥 RESULTADOS RECIBIDOS:", data);
+            socket.on("tabla", fig =>
+                Plotly.newPlot("tabla", fig.data, fig.layout, { responsive: true, displayModeBar: false })
+            );
 
-            const divResultado = document.getElementById("desc");
+            socket.on("matriz_confusion", fig =>
+                Plotly.newPlot("matriz_confusion", fig.data, fig.layout, { responsive: true, displayModeBar: false })
+            );
+            socket.on("result", (data) => {
+                console.log("📥 RESULTADOS RECIBIDOS:", data);
 
-            // Limpiar contenido previo
-            divResultado.innerHTML = `<h3>Resultado del análisis</h3>`;
+                const divResultado = document.getElementById("desc");
 
-            data.results.forEach(res => {
+                // Limpiar contenido previo
+                divResultado.innerHTML = `<h3>Resultado del análisis</h3>`;
 
-                let confidenceText = "No disponible (SVM)";
-                if (res.confidence !== null && res.confidence !== undefined) {
-                    confidenceText = `${(res.confidence * 100).toFixed(2)}%`;
-                }
+                data.results.forEach(res => {
 
-                const badgeColor =
-                    res.sentiment === "Positive"
-                        ? "var(--accent-2)"
-                        : "var(--danger)";
+                    let confidenceText = "No disponible (SVM)";
+                    if (res.confidence !== null && res.confidence !== undefined) {
+                        confidenceText = `${(res.confidence * 100).toFixed(2)}%`;
+                    }
 
-                divResultado.innerHTML += `
+                    const badgeColor =
+                        res.sentiment === "Positive"
+                            ? "var(--accent-2)"
+                            : "var(--danger)";
+
+                    divResultado.innerHTML += `
                 <div style="
                 margin-top: 12px;
                 padding: 10px;
@@ -277,14 +282,14 @@
                 <p><strong>Confianza:</strong> ${confidenceText}</p>
                 </div>
                 `;
+                });
             });
-        });
 
-        function analizarResena() {
-            const texto = document.getElementById("reviewText").value.trim();
-            if (!texto) return alert("Introduce una reseña primero");
-            socket.emit("analizar_resena", { text: texto });
-        }
+            function analizarResena() {
+                const texto = document.getElementById("reviewText").value.trim();
+                if (!texto) return alert("Introduce una reseña primero");
+                socket.emit("analizar_resena", { text: texto });
+            }
     </script>
 
 </body>

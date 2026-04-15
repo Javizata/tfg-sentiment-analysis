@@ -119,6 +119,14 @@
         0 0 0 6px rgba(0, 209, 255, .25);
     }
 
+    .button-success {
+      background: linear-gradient(180deg, rgba(0, 255, 166, 0.35), rgba(0, 255, 166, 0.15));
+      border-color: rgba(0, 255, 166, 0.6);
+      color: #00ffa6;
+      cursor: default;
+    }
+
+
 
 
     /* ========================= */
@@ -195,21 +203,14 @@
         <div class="new-neural">
 
 
-          <form action="/upload_distilbert" method="POST" enctype="multipart/form-data">
-            <input type="file" name="file" accept=".zip">
-            <button type="submit" class="continue-button">Subir modelos DistilBERT</button>
-          </form </div>
-        </div>
 
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-        <ul class="flash-messages">
-          {% for category, message in messages %}
-          <li class="{{ category }}">{{ message }}</li>
-          {% endfor %}
-        </ul>
-        {% endif %}
-        {% endwith %}
+          <input type="file" id="distilbertFile" accept=".zip">
+          <br>
+          <br>
+          <button class="continue-button" id="uploadDistilbertBtn" onclick="uploadDistilbert()" disabled>
+            Subir modelos DistilBERT
+          </button>
+        </div>
     </section>
   </div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.js"></script>
@@ -223,13 +224,7 @@
       });
     }
 
-    // Reusar la misma conexión
     const socket = window.socket;
-    // URL del servidor
-
-
-    // Configuración de SocketIO
-
 
     socket.on("connect", () => {
       console.log("✅ Socket conectado:", socket.id);
@@ -249,88 +244,49 @@
       console.log("📨 Evento recibido:", eventName, args);
     });
 
-    const logsContainer = document.getElementById("logs");
-    const metricsContainer = document.getElementById("metrics");
-    const errorsContainer = document.getElementById("errors");
+    const fileInput = document.getElementById("distilbertFile");
+    const uploadBtn = document.getElementById("uploadDistilbertBtn");
 
-    const jobsMap = {};
-
-    // =========================
-    // LOGS EN TIEMPO REAL
-    // =========================
-    socket.on("job_log", (data) => {
-      console.log("📥 RECIBIDO job_log:", data);
-      console.log("   - Job:", data.job);
-      console.log("   - Status:", data.status);
-      console.log("   - Log length:", data.log ? data.log.length : 0);
-
-      let jobDiv = jobsMap[data.job];
-      if (!jobDiv) {
-        jobDiv = document.createElement("div");
-        jobDiv.id = "job-" + data.job;
-
-        const title = document.createElement("div");
-        title.className = "job-title";
-        title.textContent = `${data.job} (${data.status})`;
-
-        const logContent = document.createElement("div");
-        logContent.className = "log-line";
-
-        jobDiv.appendChild(title);
-        jobDiv.appendChild(logContent);
-        logsContainer.appendChild(jobDiv);
-
-        jobsMap[data.job] = jobDiv;
-        console.log("✅ Creado nuevo job div para:", data.job);
+    fileInput.addEventListener("change", () => {
+      if (fileInput.files.length > 0) {
+        uploadBtn.disabled = false;
       } else {
-        // actualizar status si cambia
-        jobDiv.querySelector(".job-title").textContent = `${data.job} (${data.status})`;
-        console.log("✅ Actualizado job div para:", data.job);
-      }
-
-      // append del log con saltos de línea
-      const logContent = jobDiv.querySelector(".log-line");
-      logContent.innerHTML += data.log.replace(/\n/g, "<br>");
-
-      // scroll automático
-      logsContainer.scrollTop = logsContainer.scrollHeight;
-    });
-
-    // =========================
-    // MÉTRICAS RECIBIDAS
-    // =========================
-    socket.on("metrics", (data) => {
-      metricsContainer.style.display = "block";
-
-      let html = "<h2>Resultados del entrenamiento</h2>";
-      data.forEach(model => {
-        html += `
-          <div class="metric-card">
-            <h3>${model.model}</h3>
-            <div class="metric-value">Accuracy: ${model.accuracy.toFixed(4)}</div>
-            <div class="metric-value">Precision: ${model.precision.toFixed(4)}</div>
-            <div class="metric-value">Recall: ${model.recall.toFixed(4)}</div>
-            <div class="metric-value">F1-score: ${model.f1_score.toFixed(4)}</div>
-          </div>
-        `;
-      });
-
-      metricsContainer.innerHTML = html;
-    });
-
-    // =========================
-    // ERRORES
-    // =========================
-    socket.on("error", (data) => {
-      if (errorsContainer) {
-        const errDiv = document.createElement("div");
-        errDiv.className = "error-message";
-        errDiv.textContent = data.message;
-        errorsContainer.appendChild(errDiv);
-      } else {
-        alert(data.message);
+        uploadBtn.disabled = true;
       }
     });
+
+    async function uploadDistilbert() {
+      const input = document.getElementById("distilbertFile");
+
+      if (!input.files.length) {
+        alert("Selecciona un archivo ZIP");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("file", input.files[0]);
+
+      try {
+        const response = await fetch("/upload_distilbert", {
+          method: "POST",
+          body: formData
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          uploadBtn.textContent = "✅ Modelo cargado correctamente";
+          uploadBtn.classList.add("button-success");
+          uploadBtn.disabled = true;
+        } else {
+          alert(data.error || "Error al subir modelos DistilBERT");
+        }
+      } catch (err) {
+        alert("Error de conexión con el servidor");
+        console.error(err);
+      }
+    }
+
   </script>
 </body>
 

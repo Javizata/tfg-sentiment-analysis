@@ -1,6 +1,7 @@
 import os
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 import torch
+import gc
 
 BASE_DIR = os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 ARTIFACTS_DIR = os.path.join(BASE_DIR, "artifacts")
@@ -25,7 +26,25 @@ def load_distilbert_models():
                 "tokenizer": tokenizer,
                 "model": model
             }
+def unload_distilbert_models():
+    """
+    Libera todos los modelos DistilBERT de memoria
+    (NECESARIO en Windows antes de borrar archivos)
+    """
+    global DISTILBERT_MODELS
 
+    for entry in DISTILBERT_MODELS.values():
+        model = entry.get("model")
+        if model is not None:
+            del model
+
+    DISTILBERT_MODELS.clear()
+
+    torch.cuda.empty_cache()
+    gc.collect()
+
+    print("🧹 DistilBERT liberado de memoria")
+    
 def predict_distilbert(text, model_key):
     entry = DISTILBERT_MODELS[model_key]
 
