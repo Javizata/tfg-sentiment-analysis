@@ -1,6 +1,6 @@
 import numpy as np
 import plotly.graph_objs as go
-
+from app_state import APP_STATE
 # =========================
 # ESTILO GLOBAL PLOTLY (HMI)
 # =========================
@@ -20,44 +20,18 @@ HMI_LAYOUT = dict(
     margin=dict(l=50, r=30, t=60, b=40),
 )
 
-# =========================
-# MÉTRICAS BASE (SIMULADAS)
-# =========================
-ALL_METRICS = {
-    "logistic_imdb": {
-        "name": "Logistic Regression",
-        "accuracy": 0.8786,
-        "precision": 0.8662,
-        "recall": 0.8938,
-        "f1": 0.8798
-    },
-    "svm_imdb": {
-        "name": "Linear SVM",
-        "accuracy": 0.8696,
-        "precision": 0.8650,
-        "recall": 0.8740,
-        "f1": 0.8695
-    },
-    "nb_imdb": {
-        "name": "Naive Bayes",
-        "accuracy": 0.8472,
-        "precision": 0.8347,
-        "recall": 0.8636,
-        "f1": 0.8489
-    }
-}
 
 # =========================
 # FUNCIÓN PRINCIPAL
 # =========================
-def cargar_todo(models_selected:list = ["logistic_imdb","nb_imdb","svm_imdb"]):
-    metrics = {k: v for k, v in ALL_METRICS.items() if k in models_selected}
+def cargar_todo(models_selected:list = ["logistic_imdb","nb_imdb","svm_imdb","distilbert_imdb_model","distilbert_sst2_finetuned_model"]):
+    metrics = {k: v for k, v in APP_STATE["metrics"].items() if k in models_selected}
 
-    models = [v["name"] for v in metrics.values()]
+    models = [v["model"] for v in metrics.values()]
     accuracy = [v["accuracy"] for v in metrics.values()]
     precision = [v["precision"] for v in metrics.values()]
     recall = [v["recall"] for v in metrics.values()]
-    f1 = [v["f1"] for v in metrics.values()]
+    f1 = [v["f1_score"] for v in metrics.values()]
 
     # =================================================
     # 1. BARRAS AGRUPADAS (COMPARACIÓN DIRECTA)
@@ -83,10 +57,10 @@ def cargar_todo(models_selected:list = ["logistic_imdb","nb_imdb","svm_imdb"]):
 
     for v in metrics.values():
         fig2.add_trace(go.Scatterpolar(
-            r=[v["accuracy"], v["precision"], v["recall"], v["f1"]],
+            r=[v["accuracy"], v["precision"], v["recall"], v["f1_score"]],
             theta=radar_metrics,
             fill="toself",
-            name=v["name"]
+            name=v["model"]
         ))
 
     fig2.update_layout(

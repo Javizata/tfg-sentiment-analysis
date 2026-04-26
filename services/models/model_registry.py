@@ -5,6 +5,7 @@ import joblib
 import spacy
 import gc
 from app_state import APP_STATE
+from services.stats.metrics import load_classic_metrics
 
 # === REGISTRO EN MEMORIA ===
 NLP = None
@@ -57,6 +58,8 @@ def load_classic_models():
                 print(f"✅ Classic model loaded: {model_name}")
 
     APP_STATE["classic_models"] = len(MODELS) > 0
+    
+    load_classic_metrics(model_dir)
     _update_ready_state()
 
 def unload_classic_models():
