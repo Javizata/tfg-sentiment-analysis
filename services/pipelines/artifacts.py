@@ -3,7 +3,7 @@ import requests
 import zipfile
 from helpers import socketio
 from services.models.artifact_state import update_app_state
-from services.models.model_registry import load_classic_models
+from services.models.model_registry import load_classic_models, clean_old_classic_models
 
 GITLAB_TOKEN = os.getenv("GITLAB_TOKEN")
 GITLAB_PROJECT_ID = os.getenv("GITLAB_PROJECT_ID")
@@ -15,16 +15,9 @@ def download_artifacts(job_id):
     url = f"https://gitlab.com/api/v4/projects/{GITLAB_PROJECT_ID}/jobs/{job_id}/artifacts"
     headers = {"PRIVATE-TOKEN": GITLAB_TOKEN}
 
-    os.makedirs(ARTIFACTS_DIR, exist_ok=True)
-
-    zip_path = os.path.join(
-        ARTIFACTS_DIR,
-        f"artifacts_job_{job_id}.zip"
-    )
-
     # 1️⃣ Descargar ZIP
     resp = requests.get(url, headers=headers, stream=True)
-
+    
     if resp.status_code != 200:
         socketio.emit(
             "error",
@@ -32,6 +25,15 @@ def download_artifacts(job_id):
             namespace="/pipeline"
         )
         return
+    
+    clean_old_classic_models()
+
+    os.makedirs(ARTIFACTS_DIR, exist_ok=True)
+
+    zip_path = os.path.join(
+        ARTIFACTS_DIR,
+        f"artifacts_job_{job_id}.zip"
+    )
 
     with open(zip_path, "wb") as f:
         for chunk in resp.iter_content(chunk_size=8192):
@@ -57,9 +59,7 @@ def download_artifacts(job_id):
         {"job_id": job_id},
         namespace="/pipeline"
     )
-    
     update_app_state()
     load_classic_models()
 
-    # 6️⃣ Notificar éxito
     

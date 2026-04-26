@@ -4,6 +4,7 @@ APP_STATE = {
     "classic_ready": False,
     "distilbert_ready": False,
     "ready": False,
-    "models_to_use":[]
+    "models_to_use":[],
+    "metrics":{}
     }
 

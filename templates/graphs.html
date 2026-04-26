@@ -124,9 +124,15 @@
   <div class="container">
     <h1>Dashboard Analítico</h1>
 
+    <br>
+    <br>
     <section class="panel">
-
+      <a href="{{ url_for('main.model_info') }}" class="btn"
+        style=" text-decoration: none; color: #bbbbbb;background: linear-gradient(180deg, rgba(105, 23, 238, 0.097), rgba(0, 81, 255, 0.15));">
+        Main menu
+      </a>
       <div class="controls">
+        
         <button class="btn" onclick="socket.emit('report')">
           Cargar visualizaciones
         </button>
