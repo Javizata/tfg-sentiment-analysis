@@ -125,7 +125,7 @@
       color: #00ffa6;
       cursor: default;
     }
-
+   
 
 
 
@@ -148,6 +148,9 @@
 <body>
   <h1>Configuracion de Modelos</h1>
   <div class="info">
+    <a href="{{ url_for('main.model_info') }}" class="continue-button" style="width: fit-content; text-decoration: none; color: #bbbbbb;background: linear-gradient(180deg, rgba(105, 23, 238, 0.097), rgba(0, 81, 255, 0.15));">
+      Main menu
+    </a>
     <p>Actualmente los modelos son entrenados con la base de datos de IMDB de Hugging Face. <br>
       Para conseguir una mayor precision se realiza un "fine tunning" con la base de datos de STT-2 de Hugging Face.
     </p>
@@ -157,12 +160,12 @@
     <section class="container">
       <div class="panel">
         <h2>Entrenar Modelos Clasicos</h2>
+
         <p>En esta seccion existe la posibilidad de reentrenar los modelos en tiempo real. <br>
           Esto se realiza mediante una <strong>Pipeline de GitLab</strong> la cual entrena todos los modelos clasicos de
           nuevo
           para posteriormente ser utilizados.
         </p>
-
 
         <form action="{{ url_for('pipeline.trigger_pipeline_route') }}" method="POST">
           <button class="continue-button" type="submit">Lanzar pipeline</button>
@@ -199,7 +202,11 @@
           2 - Abrir la pagina de Google Colab. <br>
           3 - Crear un proyecto con ese archivo e iniciar el entrenamiento. <br>
           4 - Descargar el archivo con el modelo entrenado y subirlo en la seccion "Entrenar Red Neuronal"</p>
-        <button class="continue-button">Descargar Red Neuronal</button>
+
+        <a href="/download_distilbert_notebook" class="continue-button" style="text-decoration: none;">
+          Descargar Red Neuronal
+        </a>
+
         <div class="new-neural">
 
 

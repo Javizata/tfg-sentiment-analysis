@@ -73,6 +73,7 @@
             display: flex;
             justify-content: center;
             margin-bottom: 24px;
+            align-items: flex-end;
         }
 
         .btn {
@@ -185,9 +186,14 @@
                 </div>
             </div>
             <div class="controls">
-                <button class="btn" onclick="socket.emit('report')" style="margin-top: 3%;">
-                    Cargar visualizaciones
-                </button>
+                <br><br>
+                <br>
+                <a href="{{ url_for('main.model_info') }}" class="btn"
+                style=" text-decoration: none; color: #bbbbbb;background: linear-gradient(180deg, rgba(105, 23, 238,
+                0.097), rgba(0, 81, 255, 0.15)); height: fit-content;">
+                Main menu
+                </a>
+
             </div>
             <div class="grid">
 
@@ -227,44 +233,44 @@
             socket.emit("report");
         });
 
-            const socket = window.socket;
+        const socket = window.socket;
 
-            socket.on("grafico_lineas", fig =>
-                Plotly.newPlot("grafico_lineas", fig.data, fig.layout, { responsive: true, displayModeBar: false })
-            );
+        socket.on("grafico_lineas", fig =>
+            Plotly.newPlot("grafico_lineas", fig.data, fig.layout, { responsive: true, displayModeBar: false })
+        );
 
-            socket.on("grafico_barras", fig =>
-                Plotly.newPlot("grafico_barras", fig.data, fig.layout, { responsive: true, displayModeBar: false })
-            );
+        socket.on("grafico_barras", fig =>
+            Plotly.newPlot("grafico_barras", fig.data, fig.layout, { responsive: true, displayModeBar: false })
+        );
 
-            socket.on("tabla", fig =>
-                Plotly.newPlot("tabla", fig.data, fig.layout, { responsive: true, displayModeBar: false })
-            );
+        socket.on("tabla", fig =>
+            Plotly.newPlot("tabla", fig.data, fig.layout, { responsive: true, displayModeBar: false })
+        );
 
-            socket.on("matriz_confusion", fig =>
-                Plotly.newPlot("matriz_confusion", fig.data, fig.layout, { responsive: true, displayModeBar: false })
-            );
-            socket.on("result", (data) => {
-                console.log("📥 RESULTADOS RECIBIDOS:", data);
+        socket.on("matriz_confusion", fig =>
+            Plotly.newPlot("matriz_confusion", fig.data, fig.layout, { responsive: true, displayModeBar: false })
+        );
+        socket.on("result", (data) => {
+            console.log("📥 RESULTADOS RECIBIDOS:", data);
 
-                const divResultado = document.getElementById("desc");
+            const divResultado = document.getElementById("desc");
 
-                // Limpiar contenido previo
-                divResultado.innerHTML = `<h3>Resultado del análisis</h3>`;
+            // Limpiar contenido previo
+            divResultado.innerHTML = `<h3>Resultado del análisis</h3>`;
 
-                data.results.forEach(res => {
+            data.results.forEach(res => {
 
-                    let confidenceText = "No disponible (SVM)";
-                    if (res.confidence !== null && res.confidence !== undefined) {
-                        confidenceText = `${(res.confidence * 100).toFixed(2)}%`;
-                    }
+                let confidenceText = "No disponible (SVM)";
+                if (res.confidence !== null && res.confidence !== undefined) {
+                    confidenceText = `${(res.confidence * 100).toFixed(2)}%`;
+                }
 
-                    const badgeColor =
-                        res.sentiment === "Positive"
-                            ? "var(--accent-2)"
-                            : "var(--danger)";
+                const badgeColor =
+                    res.sentiment === "Positive"
+                        ? "var(--accent-2)"
+                        : "var(--danger)";
 
-                    divResultado.innerHTML += `
+                divResultado.innerHTML += `
                 <div style="
                 margin-top: 12px;
                 padding: 10px;
@@ -282,14 +288,14 @@
                 <p><strong>Confianza:</strong> ${confidenceText}</p>
                 </div>
                 `;
-                });
             });
+        });
 
-            function analizarResena() {
-                const texto = document.getElementById("reviewText").value.trim();
-                if (!texto) return alert("Introduce una reseña primero");
-                socket.emit("analizar_resena", { text: texto });
-            }
+        function analizarResena() {
+            const texto = document.getElementById("reviewText").value.trim();
+            if (!texto) return alert("Introduce una reseña primero");
+            socket.emit("analizar_resena", { text: texto });
+        }
     </script>
 
 </body>
