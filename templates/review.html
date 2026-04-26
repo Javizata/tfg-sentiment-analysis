@@ -188,37 +188,69 @@
             <div class="controls">
                 <br><br>
                 <br>
-                <a href="{{ url_for('main.model_info') }}" class="btn"
-                style=" text-decoration: none; color: #bbbbbb;background: linear-gradient(180deg, rgba(105, 23, 238,
+                <a href="{{ url_for('main.model_info') }}" class="btn" style=" text-decoration: none; color: #bbbbbb;background: linear-gradient(180deg, rgba(105, 23, 238,
                 0.097), rgba(0, 81, 255, 0.15)); height: fit-content;">
-                Main menu
+                    Main menu
                 </a>
 
             </div>
             <div class="grid">
 
-                <div class="card">
-                    <h3>Gráfico de Líneas</h3>
-                    <div id="grafico_lineas" class="plot"></div>
-                </div>
 
                 <div class="card">
-                    <h3>Gráfico de Barras</h3>
+                    <h3>Comparación de Métricas</h3>
                     <div id="grafico_barras" class="plot"></div>
+                    <p>Compara de manera directa las principales métricas de rendimiento entre los modelos
+                        seleccionados,
+                        permitiendo identificar diferencias cuantitativas de forma inmediata.
+                    </p>
                 </div>
 
                 <div class="card">
-                    <h3>Tabla de Datos</h3>
+                    <h3>Heatmap de Métricas</h3>
+                    <div id="heatmap" class="plot"></div>
+                    <p>PEl mapa de calor facilita la comparación visual de todas las métricas simultáneamente,
+                        destacando patrones
+                        de rendimiento y diferencias relativas entre modelos.
+                    </p>
+                </div>
+
+                <div class="card">
+                    <h3>Tabla Comparativa</h3>
                     <div id="tabla" class="plot"></div>
+                    <p> Facilita la comparación visual de todas las métricas simultáneamente.
+                    </p>
                 </div>
 
                 <div class="card">
-                    <h3>Matriz de Confusión</h3>
-                    <div id="matriz_confusion" class="plot"></div>
+                    <h3>Perfil de Rendimiento</h3>
+                    <div id="radar" class="plot"></div>
+                    <p> El diagrama radar permite analizar el equilibrio global de cada modelo, mostrando su
+                        comportamiento
+                        conjunto en términos de accuracy, precision, recall y F1‑score.
+                    </p>
+                </div>
+
+                <div class="card">
+                    <h3>Ranking por F1-score</h3>
+                    <div id="ranking" class="plot"></div>
+                    <p>Permite identificar de forma clara el modelo con mejor equilibrio entre precisión y exhaustividad
+                    </p>
+                </div>
+
+                <div class="card">
+                    <h3>Precision vs Recall</h3>
+                    <div id="precision_recall" class="plot"></div>
+                    <p>Representa el compromiso entre ambas métricas, proporcionando una visión más profunda del
+                        comportamiento de
+                        los modelos ante falsos positivos y falsos negativos.
+                    </p>
                 </div>
 
             </div>
-        </section>
+
+    </div>
+    </section>
     </div>
 
     <script>
@@ -235,20 +267,28 @@
 
         const socket = window.socket;
 
-        socket.on("grafico_lineas", fig =>
-            Plotly.newPlot("grafico_lineas", fig.data, fig.layout, { responsive: true, displayModeBar: false })
+        socket.on("grafico_barras", fig =>
+            Plotly.newPlot("grafico_barras", fig.data, fig.layout, { displayModeBar: false, responsive: true })
         );
 
-        socket.on("grafico_barras", fig =>
-            Plotly.newPlot("grafico_barras", fig.data, fig.layout, { responsive: true, displayModeBar: false })
+        socket.on("heatmap", fig =>
+            Plotly.newPlot("heatmap", fig.data, fig.layout, { displayModeBar: false, responsive: true })
         );
 
         socket.on("tabla", fig =>
-            Plotly.newPlot("tabla", fig.data, fig.layout, { responsive: true, displayModeBar: false })
+            Plotly.newPlot("tabla", fig.data, fig.layout, { displayModeBar: false, responsive: true })
         );
 
-        socket.on("matriz_confusion", fig =>
-            Plotly.newPlot("matriz_confusion", fig.data, fig.layout, { responsive: true, displayModeBar: false })
+        socket.on("radar", fig =>
+            Plotly.newPlot("radar", fig.data, fig.layout, { displayModeBar: false, responsive: true })
+        );
+
+        socket.on("ranking", fig =>
+            Plotly.newPlot("ranking", fig.data, fig.layout, { displayModeBar: false, responsive: true })
+        );
+
+        socket.on("precision_recall", fig =>
+            Plotly.newPlot("precision_recall", fig.data, fig.layout, { displayModeBar: false, responsive: true })
         );
         socket.on("result", (data) => {
             console.log("📥 RESULTADOS RECIBIDOS:", data);

@@ -2,6 +2,7 @@ import os
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 import torch
 import gc
+from services.stats.metrics import load_distilbert_metrics
 
 BASE_DIR = os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 ARTIFACTS_DIR = os.path.join(BASE_DIR, "artifacts")
@@ -26,6 +27,9 @@ def load_distilbert_models():
                 "tokenizer": tokenizer,
                 "model": model
             }
+            
+    load_distilbert_metrics(ARTIFACTS_DIR)
+            
 def unload_distilbert_models():
     """
     Libera todos los modelos DistilBERT de memoria
