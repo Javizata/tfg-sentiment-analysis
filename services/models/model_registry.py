@@ -102,5 +102,5 @@ def clean_old_classic_models():
             
 def _update_ready_state():
     APP_STATE["ready"] = (
-        APP_STATE["classic_models"] or APP_STATE["distilbert_models"]
+        APP_STATE["classic_ready"] or APP_STATE["distilbert_ready"]
     )

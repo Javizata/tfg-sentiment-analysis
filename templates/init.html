@@ -110,11 +110,13 @@
       .subtitle2 {
         font-size: 14px;
       }
-      body{
+
+      body {
         zoom: 0.7;
       }
-      .page{
-              min-height: 100svh;
+
+      .page {
+        min-height: 100svh;
 
       }
     }
@@ -126,24 +128,23 @@
     <div class="container2" id="box">
       <h1 class="title">Welcome!</h1>
       <p class="subtitle">
-        Esta aplicación se enfoca en implementar y evaluar diferentes algoritmos de aprendizaje automático y redes
-        neuronales, para el <strong>análisis de polaridad (positivo/negativo)</strong> en reseñas cinematográficas.
-        Utilizando como
-        dataset <strong>IMDB y SST-2</strong>, se busca
-        desarrollar un pipeline completo que aborde todas las etapas del procesamiento de texto.
+        This App is oriented to implement and compare different algorithms of <strong>machine learning</strong> and a
+        <strong>neural network</strong> to analyze the polarity (positive/negative) from the cinema reviews. <br>
+        To achieve that the models are trained with <strong>Hugging-Face IMDB Dataset</strong> and <strong>Hugging-Face SST-2 Dataset (Rotten Tomatoes)</strong>
+        <br>
+        The main goal is to develop an interactive interface to show the evaluation of the models in <strong>Natural Language Processing (NLP)</strong>
       </p>
       <p class="subtitle2">
-        Arquitectura basada en Flask, Gitlab y Python para el procesamiento
-        de datos.
+        The architecture is based on Flask, Git and Python for data processing.
       </p>
 
       <a href="{{ url_for('main.model_info') }}" class="button" id="enterBtn">
-        Entrar
+        Initiate
       </a>
     </div>
 
     <footer class="footer">
-      <p style="margin-bottom: 0;">Trabajo de Fin de Grado de Ingeniería Informática</p>
+      <p style="margin-bottom: 0;">Final project from Computer Engineering studies.</p>
       <p style="margin-top: 2px; margin-bottom: 0;">Francisco Javier Zataraín Lamy</p>
     </footer>
   </div>

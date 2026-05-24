@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Comparativa de Modelos</title>
+  <title>Model Comparison</title>
 
 
   <style>
@@ -38,13 +38,6 @@
         linear-gradient(#0a0f14, #06090d);
     }
 
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-    }
-
     .container {
       max-width: 1100px;
       margin: 60px auto;
@@ -67,7 +60,7 @@
       box-shadow:
         0 0 0 1px rgba(0, 209, 255, .05) inset,
         0 10px 30px rgba(0, 0, 0, .45);
-      padding: 24px;
+      padding: 8px;
       display: flex;
       flex-direction: column;
     }
@@ -103,15 +96,12 @@
       box-shadow: 0 6px 20px rgba(0, 0, 0, .35);
       transition: transform .2s ease, box-shadow .3s ease;
 
-      /* --- CAMBIOS NECESARIOS --- */
       position: relative;
       overflow: hidden;
       min-height: 160px;
       cursor: pointer;
-      /* feedback de interactividad */
     }
 
-    /* Contenedor del contenido */
     .card-content {
       display: flex;
       flex-direction: column;
@@ -121,24 +111,20 @@
       text-align: center;
     }
 
-    /* Efecto: subir contenido al hover */
     .card:hover .card-content {
       transform: translateY(-14px);
     }
 
-    /* El mismo efecto de subir contenido cuando está activa */
     .card.active .card-content {
       transform: translateY(-14px);
     }
 
-    /* Muestra la descripción cuando está activa */
     .card.active .desc {
       opacity: 1;
       max-height: 300px;
       padding-top: 10px;
     }
 
-    /* Opcional accesible: indicar foco con teclado */
     .card:focus-visible {
       outline: 2px solid rgba(0, 209, 255, .6);
       outline-offset: 4px;
@@ -205,7 +191,6 @@
         0 0 0 6px rgba(0, 209, 255, .25);
     }
 
-    /* Descripciones */
     .card .desc {
       opacity: 0;
       max-height: 0;
@@ -253,10 +238,6 @@
       zoom: 0.7;
     }
 
-    .panel {
-      padding: 8px;
-    }
-
     .just-checks {
       justify-content: flex-start;
     }
@@ -269,24 +250,24 @@
 
 <body>
   <div class="container">
-    <h1>Modelos clásicos vs Redes neuronales</h1>
+    <h1>Classic Models vs Neural Networks</h1>
 
     <div class="first-info">
       <div>
-        <label for="info">Nuestros modelos:</label>
+        <label for="info">Our Models:</label>
         <p id="info">
-          A continuacion se presentan los distintos modelos entrenados para el procesamiento de reseñas en el cine.
-          Estos modelos han tenido un entrenamiento especifico con las bases de datos de IMDB y SST-2 de Hugging Face.
-          Gracias a este entrenamiento permiten hacer una deteccion de sentimiento <strong>positivo o negativo</strong>
-          con gran precision.
+          Below are the different models trained for processing movie reviews.
+          These models have been specifically trained using the IMDB and SST-2 datasets from Hugging Face.
+          Thanks to this training, they allow sentiment detection <strong>positive or negative</strong>
+          with high accuracy.
           <br>
-          En concreto las posibilidades son de <strong>3 modelos clasicos</strong> frente a 1 red neuronal actual.
+          Specifically, the possibilities include <strong>3 classic models</strong> versus 1 modern neural network.
           <br>
           <br>
         </p>
       </div>
       <a href="{{ url_for('main.base') }}" class="continue-button" id="enterBtn">
-        Configuracion
+        Configuration
       </a>
     </div>
     <section class="panel">
@@ -294,29 +275,29 @@
         <div class="left">
           <div class="card classic" tabindex="0" role="button" aria-expanded="false">
             <div class="card-content">
-              <h2>Regresión Logística</h2>
-              <p class="desc"> Modelo estadístico lineal
-                utilizado para
-                problemas de clasificación binaria. Es eficiente, interpretable
-                y funciona bien cuando la relación entre variables es aproximadamente lineal.</p>
+              <h2>Logistic Regression</h2>
+              <p class="desc">Linear statistical model
+                used for
+                binary classification problems. It is efficient, interpretable
+                and works well when the relationship between variables is approximately linear.</p>
             </div>
           </div>
 
           <div class="card classic" tabindex="0" role="button" aria-expanded="false">
             <div class="card-content">
               <h2>Naive Bayes</h2>
-              <p class="desc">Clasificador probabilístico basado en el teorema de Bayes y la suposición de independencia
-                entre
-                variables. Destaca por su rapidez y buen rendimiento en tareas de clasificación de texto.</p>
+              <p class="desc">Probabilistic classifier based on Bayes' theorem and the assumption of independence
+                between
+                variables. It stands out for its speed and strong performance in text classification tasks.</p>
             </div>
           </div>
 
           <div class="card classic" tabindex="0" role="button" aria-expanded="false">
             <div class="card-content">
               <h2 style="text-align: center;">Support Vector Machine (SVM)</h2>
-              <p class="desc"> Modelo de aprendizaje supervisado que busca el hiperplano óptimo que separa las clases
-                maximizando el
-                margen. Es eficaz en espacios de alta dimensionalidad.</p>
+              <p class="desc">Supervised learning model that finds the optimal hyperplane separating classes
+                maximizing the
+                margin. It is effective in high-dimensional spaces.</p>
             </div>
           </div>
         </div>
@@ -324,9 +305,9 @@
         <div class="card nn" tabindex="0" role="button" aria-expanded="false">
           <div class="card-content">
             <h2>DistilBERT</h2>
-            <p class="desc">Modelo de lenguaje basado en transformers, optimizado a partir de BERT mediante técnicas de
-              destilación.
-              Mantiene un alto rendimiento en comprensión del lenguaje natural con menor coste computacional.</p>
+            <p class="desc">Transformer-based language model, optimized from BERT using
+              distillation techniques.
+              It maintains high performance in natural language understanding with lower computational cost.</p>
           </div>
         </div>
 
@@ -336,7 +317,7 @@
     <br>
     <section class="panel">
       <div>
-        <h3>Seleccion de Modelos:</h3>
+        <h3>Model Selection:</h3>
         <hr>
 
       </div>
@@ -346,7 +327,7 @@
             <label style="display: flex; align-items: center; gap: 8px;"><input type="checkbox" name="models"
                 value="logistic_imdb"
                 style="scale: 3; margin: 10%;transform-origin: left center; vertical-align: middle; margin-right: 16%;">
-              Regresion Logistica</label><br>
+              Logistic Regression</label><br>
             <label style="display: flex; align-items: center; gap: 8px;"><input type="checkbox" name="models"
                 value="nb_imdb"
                 style="scale: 3; margin: 10%;transform-origin: left center; vertical-align: middle; margin-right: 16%;">
@@ -379,11 +360,11 @@
         <div class="just-buttons">
 
           <button class="continue-button" onclick="enviarSeleccion('graphs')">
-            Generar Reporte
+            Generate Report
           </button>
 
           <button class="continue-button" onclick="enviarSeleccion('review')">
-            Analizar Reseña
+            Analyze Review
           </button>
 
         </div>
@@ -403,21 +384,20 @@
       });
     }
 
-    // Reusar la misma conexión
     const socket = window.socket;
 
     socket.on("connect", () => {
-      console.log("✅ Socket conectado:", socket.id);
+      console.log("✅ Socket connected:", socket.id);
       console.log("📡 Namespace:", socket.nsp);
       socket.emit("get_app_state")
     });
 
     socket.on("connect_error", (err) => {
-      console.error("❌ Error de conexión:", err.message);
+      console.error("❌ Connection error:", err.message);
     });
 
     socket.on("disconnect", () => {
-      console.log("❎ Socket desconectado");
+      console.log("❎ Socket disconnected");
     });
 
     (function () {
@@ -430,14 +410,12 @@
       }
 
       cards.forEach(card => {
-        // Alterna al hacer clic
         card.addEventListener('click', () => toggleCard(card));
 
-        // Permite activar con teclado (Enter o Espacio)
         card.addEventListener('keydown', (e) => {
           const key = e.key || e.code;
           if (key === 'Enter' || key === ' ' || key === 'Spacebar' || key === 'Space') {
-            e.preventDefault(); // evita scroll con Space
+            e.preventDefault();
             toggleCard(card);
           }
         });
@@ -450,21 +428,20 @@
       ).map(cb => cb.value);
 
       if (seleccionados.length === 0) {
-        alert("Selecciona al menos un modelo");
+        alert("Select at least one model");
         return;
       }
 
-      // Enviar selección al backend
       socket.emit("selected_models", {
         models: seleccionados,
         next: destino
       });
 
-      console.log("Modelos enviados:", seleccionados);
+      console.log("Models sent:", seleccionados);
     }
 
     socket.on("redirect", (data) => {
-      console.log("➡️ Redirigiendo a:", data.url);
+      console.log("➡️ Redirecting to:", data.url);
       window.location.href = data.url;
     });
 

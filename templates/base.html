@@ -125,13 +125,7 @@
       color: #00ffa6;
       cursor: default;
     }
-   
 
-
-
-    /* ========================= */
-    /* ERRORES */
-    /* ========================= */
     #errors {
       width: 100%;
       margin-top: 15px;
@@ -146,39 +140,31 @@
 </head>
 
 <body>
-  <h1>Configuracion de Modelos</h1>
+  <h1>Model Configuration</h1>
   <div class="info">
-    <a href="{{ url_for('main.model_info') }}" class="continue-button" style="width: fit-content; text-decoration: none; color: #bbbbbb;background: linear-gradient(180deg, rgba(105, 23, 238, 0.097), rgba(0, 81, 255, 0.15));">
+    <a href="{{ url_for('main.model_info') }}" class="continue-button"
+      style="width: fit-content; text-decoration: none; color: #bbbbbb;background: linear-gradient(180deg, rgba(105, 23, 238, 0.097), rgba(0, 81, 255, 0.15));">
       Main menu
     </a>
-    <p>Actualmente los modelos son entrenados con la base de datos de IMDB de Hugging Face. <br>
-      Para conseguir una mayor precision se realiza un "fine tunning" con la base de datos de STT-2 de Hugging Face.
-    </p>
+    <p>All models are trained with Hugging Face's IMDB database. <br> In order to experiment with the precision in
+      different texts there are 2 different DistilBERT configurations. <br>1. DistilBERT only with IMDB -> To compare to
+      the classic models. <br>2. Distilbert trained with IMDB and fine-tuned with SST-2.</p>
     <br>
   </div>
   <div class="options">
     <section class="container">
       <div class="panel">
-        <h2>Entrenar Modelos Clasicos</h2>
-
-        <p>En esta seccion existe la posibilidad de reentrenar los modelos en tiempo real. <br>
-          Esto se realiza mediante una <strong>Pipeline de GitLab</strong> la cual entrena todos los modelos clasicos de
-          nuevo
-          para posteriormente ser utilizados.
-        </p>
+        <h2>Train Classic Models</h2>
+        <p>In this section exists the possibility to retrain the models in real time. <br> This is possible because of
+          a <strong>GitLab CI/CD pipeline</strong> which trains all classic models to be used again.</p>
 
         <form action="{{ url_for('pipeline.trigger_pipeline_route') }}" method="POST">
           <button class="continue-button" type="submit">Lanzar pipeline</button>
         </form>
 
-
-
         <div id="logs"></div>
 
-        <!-- NUEVO: MÉTRICAS -->
         <div id="metrics" style="display:none;"></div>
-
-        <!-- NUEVO: ERRORES -->
         <div id="errors"></div>
       </div>
 
@@ -194,28 +180,27 @@
     </section>
     <section class="container">
       <div class="panel">
-        <h2>Entrenar Red Neuronal</h2>
-        <p>Respecto al entrenamiento de la red neuronal ha sido realizado en <strong>Google Colab</strong> debido a los
-          costes de computacion. <br>
-          En caso de solicitar un reentrenamiento seran necesarios los siguientes pasos:</p>
-        <p>1 - Descargar el archivo de Google Colab. <br>
-          2 - Abrir la pagina de Google Colab. <br>
-          3 - Crear un proyecto con ese archivo e iniciar el entrenamiento. <br>
-          4 - Descargar el archivo con el modelo entrenado y subirlo en la seccion "Entrenar Red Neuronal"</p>
+        <h2>Train Neural Networks</h2>
+        <p>In order to train the neural networks <strong>Google Colab</strong> has been chosen as the training
+          enviroment. <br>The decision was based on the computing costs. <br> In case of a retrain the next steps will
+          be needed:</p>
+        <p>1 - Download of <strong>.ipynb</strong> file for Google Colab. <br>
+          2 - Open Google Colab's page. <br>
+          3 - Create a new project with that file. <br>
+          4 - Start the training. <br>
+          5 - Download the <strong>.zip</strong> file after the training. <br>
+          6 - Upload the compressed file into "Train Neural Networls"</p>
 
         <a href="/download_distilbert_notebook" class="continue-button" style="text-decoration: none;">
-          Descargar Red Neuronal
+          Download Neural Network
         </a>
 
         <div class="new-neural">
-
-
-
           <input type="file" id="distilbertFile" accept=".zip">
           <br>
           <br>
           <button class="continue-button" id="uploadDistilbertBtn" onclick="uploadDistilbert()" disabled>
-            Subir modelos DistilBERT
+            Upload DistilBERT Models
           </button>
         </div>
     </section>

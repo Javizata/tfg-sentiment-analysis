@@ -1,9 +1,7 @@
 import numpy as np
 import plotly.graph_objs as go
 from app_state import APP_STATE
-# =========================
-# ESTILO GLOBAL PLOTLY (HMI)
-# =========================
+
 HMI_LAYOUT = dict(
     template="plotly_dark",
     paper_bgcolor="rgba(0,0,0,0)",
@@ -20,22 +18,35 @@ HMI_LAYOUT = dict(
     margin=dict(l=50, r=30, t=60, b=40),
 )
 
-
-# =========================
-# FUNCIÓN PRINCIPAL
-# =========================
 def cargar_todo(models_selected:list = ["logistic_imdb","nb_imdb","svm_imdb","distilbert_imdb_model","distilbert_sst2_finetuned_model"]):
-    metrics = {k: v for k, v in APP_STATE["metrics"].items() if k in models_selected}
+    models_selected = APP_STATE["models_to_use"]
 
-    models = [v["model"] for v in metrics.values()]
-    accuracy = [v["accuracy"] for v in metrics.values()]
-    precision = [v["precision"] for v in metrics.values()]
-    recall = [v["recall"] for v in metrics.values()]
-    f1 = [v["f1_score"] for v in metrics.values()]
+    metrics_list = [
+        APP_STATE["metrics"][k]
+        for k in models_selected
+        if k in APP_STATE["metrics"]
+    ]
+    
+    valid_keys = [
+        k for k in models_selected
+        if k in APP_STATE["metrics"]
+    ]
 
-    # =================================================
-    # 1. BARRAS AGRUPADAS (COMPARACIÓN DIRECTA)
-    # =================================================
+    NAME_MAP = {
+        "logistic_imdb": "LogReg",
+        "svm_imdb": "SVM",
+        "nb_imdb": "NB",
+        "distilbert_imdb_model": "DistilBERT",
+        "distilbert_sst2_finetuned_model": "DistilBERT FT"
+    }
+
+    models = [NAME_MAP.get(k, APP_STATE["metrics"][k]["model"]) for k in valid_keys]
+    accuracy = [v["accuracy"] for v in metrics_list]
+    precision = [v["precision"] for v in metrics_list]
+    recall = [v["recall"] for v in metrics_list]
+    f1 = [v["f1_score"] for v in metrics_list]
+    
+    #BARRAS AGRUPADAS
     fig1 = go.Figure()
     fig1.add_bar(x=models, y=accuracy, name="Accuracy")
     fig1.add_bar(x=models, y=precision, name="Precision")
@@ -44,18 +55,16 @@ def cargar_todo(models_selected:list = ["logistic_imdb","nb_imdb","svm_imdb","di
 
     fig1.update_layout(
         **HMI_LAYOUT,
-        title_text="Comparación de Métricas por Modelo",
+        title_text="Model Metrics Comparison",
         barmode="group",
         yaxis=dict(range=[0.8, 0.92])
     )
 
-    # =================================================
-    # 2. RADAR (PERFIL DE RENDIMIENTO)
-    # =================================================
+    #RADAR
     radar_metrics = ["Accuracy", "Precision", "Recall", "F1-score"]
     fig2 = go.Figure()
 
-    for v in metrics.values():
+    for v in metrics_list:
         fig2.add_trace(go.Scatterpolar(
             r=[v["accuracy"], v["precision"], v["recall"], v["f1_score"]],
             theta=radar_metrics,
@@ -65,32 +74,28 @@ def cargar_todo(models_selected:list = ["logistic_imdb","nb_imdb","svm_imdb","di
 
     fig2.update_layout(
         **HMI_LAYOUT,
-        title_text="Perfil de Rendimiento por Modelo",
+        title_text="Model Performance Profile",
         polar=dict(radialaxis=dict(range=[0.8, 0.92]))
     )
-    # =========================
-    # 3. TABLA COMPARATIVA (ABREVIADA + RESALTADA ✅)
-    # =========================
-
-    model_labels = ["LogReg", "SVM", "NB"]
-
+    
+    #TABLA COMPARATIVA
     fmt = lambda x: f"{x:.3f}"
 
     fig3 = go.Figure(data=[go.Table(
 
         columnorder=[1, 2, 3, 4, 5],
-        columnwidth=[100, 90, 90, 90, 90],  # control claro
+        columnwidth=[100, 90, 90, 90, 90],  
 
         header=dict(
             values=[
-                "<b>Modelo</b>",
+                "<b>Model</b>",
                 "Acc",
                 "Prec",
                 "Rec",
                 "<b>F1</b>"
             ],
             fill_color=[
-                "#0f2430",  # ✅ color distinto para header "Modelo"
+                "#0f2430",  
                 "#0f1a24",
                 "#0f1a24",
                 "#0f1a24",
@@ -103,7 +108,7 @@ def cargar_todo(models_selected:list = ["logistic_imdb","nb_imdb","svm_imdb","di
 
         cells=dict(
             values=[
-                model_labels,
+                models,
                 [fmt(v) for v in accuracy],
                 [fmt(v) for v in precision],
                 [fmt(v) for v in recall],
@@ -113,18 +118,18 @@ def cargar_todo(models_selected:list = ["logistic_imdb","nb_imdb","svm_imdb","di
             font=dict(size=12),
 
             fill_color=[
-                ["rgba(0,209,255,0.18)"] * len(model_labels),  # ✅ columna Modelo
-                ["#0b141b"] * len(model_labels),
-                ["#0b141b"] * len(model_labels),
-                ["#0b141b"] * len(model_labels),
-                ["rgba(0,255,166,0.15)"] * len(model_labels)   # ✅ resaltar F1
+                ["rgba(0,209,255,0.18)"] * len(models),  
+                ["#0b141b"] * len(models),
+                ["#0b141b"] * len(models),
+                ["#0b141b"] * len(models),
+                ["rgba(0,255,166,0.15)"] * len(models)   
             ],
             font_color=[
-                ["#00d1ff"] * len(model_labels),  # ✅ texto Modelo
-                ["#e9f1f5"] * len(model_labels),
-                ["#e9f1f5"] * len(model_labels),
-                ["#e9f1f5"] * len(model_labels),
-                ["#e9f1f5"] * len(model_labels)
+                ["#00d1ff"] * len(models), 
+                ["#e9f1f5"] * len(models),
+                ["#e9f1f5"] * len(models),
+                ["#e9f1f5"] * len(models),
+                ["#e9f1f5"] * len(models)
             ],
             height=30
         )
@@ -132,13 +137,10 @@ def cargar_todo(models_selected:list = ["logistic_imdb","nb_imdb","svm_imdb","di
 
     fig3.update_layout(
         **HMI_LAYOUT,
-        title_text="Tabla Comparativa de Métricas"
+        title_text="Model Metrics Comparison Table"
     )
 
-
-    # =================================================
-    # 4. HEATMAP DE MÉTRICAS
-    # =================================================
+    #HEATMAP DE MÉTRICAS
     metric_matrix = np.array([accuracy, precision, recall, f1])
 
     fig4 = go.Figure(data=go.Heatmap(
@@ -152,12 +154,10 @@ def cargar_todo(models_selected:list = ["logistic_imdb","nb_imdb","svm_imdb","di
     ))
     fig4.update_layout(
         **HMI_LAYOUT,
-        title_text="Heatmap de Métricas por Modelo"
+        title_text="Metrics Heatmap by Model"
     )
 
-    # =================================================
-    # 5. RANKING POR F1-SCORE ✅ NUEVO
-    # =================================================
+    #RANKING POR F1-SCORE 
     order = np.argsort(f1)[::-1]
     fig5 = go.Figure(
         go.Bar(
@@ -168,15 +168,12 @@ def cargar_todo(models_selected:list = ["logistic_imdb","nb_imdb","svm_imdb","di
     )
     fig5.update_layout(
         **HMI_LAYOUT,
-        title_text="Ranking de Modelos por F1-score"
+        title_text="Model Ranking by F1 Score"
     )
 
-    # =================================================
-    # 6. PRECISION vs RECALL ✅ NUEVO
-    # =================================================
+    #PRECISION vs RECALL
     fig6 = go.Figure()
 
-    # 1️⃣ Puntos SIN texto
     fig6.add_trace(go.Scatter(
         x=recall,
         y=precision,
@@ -185,7 +182,6 @@ def cargar_todo(models_selected:list = ["logistic_imdb","nb_imdb","svm_imdb","di
         name="Modelos"
     ))
 
-    # 2️⃣ Etiquetas COMO annotations (NO se recortan)
     annotations = []
     for x, y, label in zip(recall, precision, models):
         annotations.append(dict(
@@ -208,7 +204,5 @@ def cargar_todo(models_selected:list = ["logistic_imdb","nb_imdb","svm_imdb","di
         yaxis=dict(title="Precision"),
         annotations=annotations
     )
-
-
 
     return fig1, fig2, fig3, fig4, fig5, fig6

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Dashboard Analítico</title>
+  <title>Analytics Dashboard</title>
 
   <!-- SOCKET + PLOTLY -->
   <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
@@ -42,7 +42,7 @@
 
     h1 {
       text-align: center;
-      margin-bottom: 30px;
+      margin-bottom: 40px;
       letter-spacing: .06em;
       text-transform: uppercase;
       color: var(--muted);
@@ -59,10 +59,18 @@
       padding: 24px;
     }
 
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
     .controls {
       display: flex;
       justify-content: center;
-      margin-bottom: 24px;
     }
 
     .btn {
@@ -75,6 +83,13 @@
       font-size: 14px;
       cursor: pointer;
       transition: transform .2s ease, box-shadow .3s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn.secondary {
+      color: #bbbbbb;
+      background: linear-gradient(180deg, rgba(105, 23, 238, 0.097), rgba(0, 81, 255, 0.15));
     }
 
     .btn:hover {
@@ -106,6 +121,12 @@
       letter-spacing: .06em;
     }
 
+    .card p {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
     .plot {
       width: 100%;
       min-height: 300px;
@@ -122,67 +143,57 @@
 <body>
 
   <div class="container">
-    <h1>Dashboard Analítico</h1>
+    <h1>Analytics Dashboard</h1>
 
-    <br>
-    <br>
     <section class="panel">
-      <a href="{{ url_for('main.model_info') }}" class="btn"
-        style=" text-decoration: none; color: #bbbbbb;background: linear-gradient(180deg, rgba(105, 23, 238, 0.097), rgba(0, 81, 255, 0.15));">
-        Main menu
-      </a>
-      <div class="controls">
-        
-        <button class="btn" onclick="socket.emit('report')">
-          Cargar visualizaciones
-        </button>
+
+      <div class="top-bar">
+        <a href="{{ url_for('main.model_info') }}" class="btn secondary">
+          Main menu
+        </a>
+
       </div>
 
       <div class="grid">
 
         <div class="card">
-          <h3>Comparación de Métricas</h3>
+          <h3>Metrics Comparison</h3>
           <div id="grafico_barras" class="plot"></div>
-          <p>Compara de manera directa las principales métricas de rendimiento entre los modelos seleccionados,
-            permitiendo identificar diferencias cuantitativas de forma inmediata.
-          </p>
+          <p>Directly compares the main performance metrics among the selected models,
+            allowing immediate identification of quantitative differences.</p>
         </div>
 
         <div class="card">
-          <h3>Heatmap de Métricas</h3>
+          <h3>Metrics Heatmap</h3>
           <div id="heatmap" class="plot"></div>
-          <p>PEl mapa de calor facilita la comparación visual de todas las métricas simultáneamente, destacando patrones
-            de rendimiento y diferencias relativas entre modelos.
-          </p>
+          <p>The heatmap facilitates visual comparison of all metrics simultaneously, highlighting
+            performance patterns and relative differences between models.</p>
         </div>
 
         <div class="card">
-          <h3>Tabla Comparativa</h3>
+          <h3>Comparison Table</h3>
           <div id="tabla" class="plot"></div>
-          <p> Facilita la comparación visual de todas las métricas simultáneamente.
-          </p>
+          <p>Facilitates the visual comparison of all metrics simultaneously.</p>
         </div>
 
         <div class="card">
-          <h3>Perfil de Rendimiento</h3>
+          <h3>Performance Profile</h3>
           <div id="radar" class="plot"></div>
-          <p> El diagrama radar permite analizar el equilibrio global de cada modelo, mostrando su comportamiento
-            conjunto en términos de accuracy, precision, recall y F1‑score.
-          </p>
+          <p>The radar chart allows analyzing the overall balance of each model,
+            showing its combined behavior in terms of accuracy, precision, recall, and F1-score.</p>
         </div>
 
         <div class="card">
-          <h3>Ranking por F1-score</h3>
+          <h3>Ranking by F1-score</h3>
           <div id="ranking" class="plot"></div>
-          <p>Permite identificar de forma clara el modelo con mejor equilibrio entre precisión y exhaustividad</p>
+          <p>Allows clear identification of the model with the best balance between precision and recall.</p>
         </div>
 
         <div class="card">
           <h3>Precision vs Recall</h3>
           <div id="precision_recall" class="plot"></div>
-          <p>Representa el compromiso entre ambas métricas, proporcionando una visión más profunda del comportamiento de
-            los modelos ante falsos positivos y falsos negativos.
-          </p>
+          <p>Represents the trade-off between both metrics, providing a deeper insight into model behavior
+            regarding false positives and false negatives.</p>
         </div>
 
       </div>
@@ -191,6 +202,21 @@
 
   <script>
     const socket = io("/stats", { transports: ["websocket", "polling"] });
+    document.addEventListener("DOMContentLoaded", () => {
+      console.log("HTML loaded → requesting charts");
+      socket.emit("report");
+    });
+    socket.on("connect", () => {
+      console.log("✅ Connected to /stats:", socket.id);
+    });
+
+    socket.on("connect_error", (err) => {
+      console.error("❌ Connection error:", err.message);
+    });
+
+    socket.on("disconnect", () => {
+      console.log("❎ Disconnected");
+    });
 
     socket.on("grafico_barras", fig =>
       Plotly.newPlot("grafico_barras", fig.data, fig.layout, { displayModeBar: false, responsive: true })

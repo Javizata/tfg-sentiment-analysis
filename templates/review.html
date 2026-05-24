@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Dashboard Analítico</title>
+    <title>Analytics Dashboard</title>
 
     <!-- SOCKET + PLOTLY -->
     <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
@@ -149,7 +149,6 @@
             min-height: 300px;
         }
 
-        /* === RESEÑA === */
         textarea {
             width: 100%;
             min-height: 140px;
@@ -168,23 +167,22 @@
 <body>
 
     <div class="container">
-        <h1>Analisis de Sentimiento</h1>
+        <h1>Sentiment Analysis</h1>
 
         <section class="panel">
 
             <div class="panel review">
                 <div class="card" id="review">
-                    <h3>Analizar reseña</h3>
-                    <textarea id="reviewText" placeholder="Introduce aquí la reseña de la película..."></textarea>
+                    <h3>Analyze review</h3>
+                    <textarea id="reviewText" placeholder="Enter the movie review here..."></textarea>
                     <br>
-                    <button class="btn" style="margin-top: 3%;" onclick="analizarResena()">Analizar sentimiento</button>
+                    <button class="btn" style="margin-top: 3%;" onclick="analyzeReview()">Analyze sentiment</button>
                 </div>
                 <div class="card" id="desc">
-                    <h3>Resultado del análisis:</h3>
-
-
+                    <h3>Analysis result:</h3>
                 </div>
             </div>
+
             <div class="controls">
                 <br><br>
                 <br>
@@ -194,56 +192,52 @@
                 </a>
 
             </div>
+
             <div class="grid">
 
-
                 <div class="card">
-                    <h3>Comparación de Métricas</h3>
+                    <h3>Metrics comparison</h3>
                     <div id="grafico_barras" class="plot"></div>
-                    <p>Compara de manera directa las principales métricas de rendimiento entre los modelos
-                        seleccionados,
-                        permitiendo identificar diferencias cuantitativas de forma inmediata.
+                    <p>Directly compares the main performance metrics between the selected models,
+                        allowing immediate identification of quantitative differences.
                     </p>
                 </div>
 
                 <div class="card">
-                    <h3>Heatmap de Métricas</h3>
+                    <h3>Metrics heatmap</h3>
                     <div id="heatmap" class="plot"></div>
-                    <p>PEl mapa de calor facilita la comparación visual de todas las métricas simultáneamente,
-                        destacando patrones
-                        de rendimiento y diferencias relativas entre modelos.
+                    <p>The heatmap facilitates the visual comparison of all metrics simultaneously,
+                        highlighting performance patterns and relative differences between models.
                     </p>
                 </div>
 
                 <div class="card">
-                    <h3>Tabla Comparativa</h3>
+                    <h3>Comparison table</h3>
                     <div id="tabla" class="plot"></div>
-                    <p> Facilita la comparación visual de todas las métricas simultáneamente.
+                    <p>Facilitates the visual comparison of all metrics simultaneously.
                     </p>
                 </div>
 
                 <div class="card">
-                    <h3>Perfil de Rendimiento</h3>
+                    <h3>Performance profile</h3>
                     <div id="radar" class="plot"></div>
-                    <p> El diagrama radar permite analizar el equilibrio global de cada modelo, mostrando su
-                        comportamiento
-                        conjunto en términos de accuracy, precision, recall y F1‑score.
+                    <p>The radar chart allows analyzing the overall balance of each model, showing its behavior
+                        in terms of accuracy, precision, recall and F1‑score.
                     </p>
                 </div>
 
                 <div class="card">
-                    <h3>Ranking por F1-score</h3>
+                    <h3>F1-score ranking</h3>
                     <div id="ranking" class="plot"></div>
-                    <p>Permite identificar de forma clara el modelo con mejor equilibrio entre precisión y exhaustividad
+                    <p>Allows clear identification of the model with the best balance between precision and recall
                     </p>
                 </div>
 
                 <div class="card">
                     <h3>Precision vs Recall</h3>
                     <div id="precision_recall" class="plot"></div>
-                    <p>Representa el compromiso entre ambas métricas, proporcionando una visión más profunda del
-                        comportamiento de
-                        los modelos ante falsos positivos y falsos negativos.
+                    <p>Represents the trade-off between both metrics, providing a deeper view of model behavior
+                        regarding false positives and false negatives.
                     </p>
                 </div>
 
@@ -261,7 +255,7 @@
         }
 
         document.addEventListener("DOMContentLoaded", () => {
-            console.log("📄 HTML cargado → solicitando gráficos");
+            console.log("HTML loaded → requesting charts");
             socket.emit("report");
         });
 
@@ -291,16 +285,15 @@
             Plotly.newPlot("precision_recall", fig.data, fig.layout, { displayModeBar: false, responsive: true })
         );
         socket.on("result", (data) => {
-            console.log("📥 RESULTADOS RECIBIDOS:", data);
+            console.log("📥 RESULTS RECEIVED:", data);
 
             const divResultado = document.getElementById("desc");
 
-            // Limpiar contenido previo
-            divResultado.innerHTML = `<h3>Resultado del análisis</h3>`;
+            divResultado.innerHTML = `<h3>Analysis result</h3>`;
 
             data.results.forEach(res => {
 
-                let confidenceText = "No disponible (SVM)";
+                let confidenceText = "Not available (SVM)";
                 if (res.confidence !== null && res.confidence !== undefined) {
                     confidenceText = `${(res.confidence * 100).toFixed(2)}%`;
                 }
@@ -318,22 +311,22 @@
                 border: 1px solid rgba(255,255,255,.15);
                 background: rgba(0,0,0,.25);
                 ">
-                <p><strong>Modelo:</strong> ${res.model}</p>
+                <p><strong>Model:</strong> ${res.model}</p>
                 <p>
-                    <strong>Sentimiento:</strong>
+                    <strong>Sentiment:</strong>
                     <span style="color:${badgeColor}; font-weight:bold">
                     ${res.sentiment}
                     </span>
                 </p>
-                <p><strong>Confianza:</strong> ${confidenceText}</p>
+                <p><strong>Confidence:</strong> ${confidenceText}</p>
                 </div>
                 `;
             });
         });
 
-        function analizarResena() {
+        function analyzeReview() {
             const texto = document.getElementById("reviewText").value.trim();
-            if (!texto) return alert("Introduce una reseña primero");
+            if (!texto) return alert("Please enter a review first");
             socket.emit("analizar_resena", { text: texto });
         }
     </script>

@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Configuración</title>
+  <title>Configuration</title>
 
   <style>
     :root {
@@ -73,13 +73,6 @@
       gap: 20px;
     }
 
-    .info {
-      color: var(--muted);
-      text-align: center;
-      width: 100%;
-    }
-
-    /* ===== BOTÓN ===== */
     .button {
       border-radius: 14px;
       border: 1px solid rgba(255, 255, 255, .08);
@@ -99,7 +92,6 @@
                   0 0 0 6px rgba(0, 209, 255, .25);
     }
 
-    /* ===== LOADING / FINISHED ===== */
     #loadingGif {
       width: 80px;
     }
@@ -111,7 +103,6 @@
       color: var(--accent-2);
     }
 
-    /* ===== LOGS ===== */
     .logs-container {
       background: #0f1a24;
       border: 1px solid rgba(0, 209, 255, 0.15);
@@ -126,7 +117,6 @@
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
     }
 
-    /* ✅ SCROLL PERSONALIZADO */
     .logs-container::-webkit-scrollbar {
       width: 10px;
     }
@@ -180,34 +170,30 @@
 
 <body>
 
-  <h1>Panel de Control</h1>
+  <h1>Control Panel</h1>
 
   <div class="options">
     <section class="container">
       <div class="panel">
 
-        <h2 id="pipelineTitle">Modelos Clásicos</h2>
+        <h2 id="pipelineTitle">Classic Models</h2>
 
-        <!-- GIF DE CARGA -->
-        <img id="loadingGif" src="{{ url_for('static', filename='img/Carga1.gif') }}" alt="Carga">
+        <img id="loadingGif" src="{{ url_for('static', filename='img/Carga1.gif') }}" alt="Loading">
 
-        <!-- TEXTO FINISHED -->
-        <div id="finishedText">✅ Entrenamiento finalizado</div>
+        <div id="finishedText">✅ Training completed</div>
 
-        <!-- LOGS -->
         <div id="logs" class="logs-container"></div>
 
         <div id="errors"></div>
 
         <a href="{{ url_for('main.model_info') }}" class="button">
-          Volver
+          Back
         </a>
 
       </div>
     </section>
   </div>
 
-  <!-- SOCKET.IO -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.js"></script>
 
   <script>
@@ -222,7 +208,7 @@
     const jobsMap = {};
 
     socket.on("connect", () => {
-      console.log("🔥 Conectado a /pipeline:", socket.id);
+      console.log("🔥 Connected to /pipeline:", socket.id);
     });
 
     socket.on("artifacts_ready", (data) => {
@@ -231,7 +217,7 @@
       document.getElementById("loadingGif").style.display = "none";
       document.getElementById("finishedText").style.display = "block";
       document.getElementById("pipelineTitle").textContent =
-        "Modelos Clásicos (Completado)";
+        "Classic Models (Completed)";
     });
 
     socket.on("job_log", (data) => {
