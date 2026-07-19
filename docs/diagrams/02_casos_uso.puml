@@ -1,0 +1,39 @@
+@startuml casos_uso
+!pragma layout smetana
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Analista / Usuario" as U
+actor "GitLab CI/CD" as G
+
+rectangle "Sistema de Análisis de Sentimiento" {
+  usecase "Ver información de modelos" as UC1
+  usecase "Lanzar pipeline de\nentrenamiento (clásicos)" as UC2
+  usecase "Visualizar logs del\npipeline en tiempo real" as UC3
+  usecase "Descargar notebook\nDistilBERT" as UC4
+  usecase "Subir modelos\nDistilBERT (ZIP)" as UC5
+  usecase "Seleccionar modelos\na utilizar" as UC6
+  usecase "Generar informe\ncomparativo (gráficos)" as UC7
+  usecase "Analizar una reseña" as UC8
+  usecase "Cargar modelos\nen memoria" as UC9
+}
+
+U --> UC1
+U --> UC2
+U --> UC3
+U --> UC4
+U --> UC5
+U --> UC6
+U --> UC7
+U --> UC8
+
+UC2 ..> UC3 : <<include>>
+UC2 ..> UC9 : <<include>>
+UC5 ..> UC9 : <<include>>
+UC7 ..> UC6 : <<include>>
+UC8 ..> UC6 : <<include>>
+
+UC2 --> G
+UC3 --> G
+
+@enduml

@@ -1,0 +1,67 @@
+' ============================================================
+' Estilo plano monocromo (similar a draw.io / StarUML)
+' Para insertar en Word. Sin colores, solo líneas negras.
+' Se aplica con:  java -jar plantuml.jar -config _estilo.puml ...
+' ============================================================
+skinparam dpi 200
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam monochrome true
+skinparam shadowing false
+skinparam roundCorner 0
+skinparam ArrowColor #000000
+skinparam ArrowThickness 1
+
+skinparam actor {
+  BackgroundColor #FFFFFF
+  BorderColor #000000
+}
+skinparam usecase {
+  BackgroundColor #FFFFFF
+  BorderColor #000000
+}
+skinparam rectangle {
+  BackgroundColor #FFFFFF
+  BorderColor #000000
+}
+skinparam package {
+  BackgroundColor #FFFFFF
+  BorderColor #000000
+}
+skinparam component {
+  BackgroundColor #FFFFFF
+  BorderColor #000000
+}
+skinparam node {
+  BackgroundColor #FFFFFF
+  BorderColor #000000
+}
+skinparam database {
+  BackgroundColor #FFFFFF
+  BorderColor #000000
+}
+skinparam cloud {
+  BackgroundColor #FFFFFF
+  BorderColor #000000
+}
+skinparam class {
+  BackgroundColor #FFFFFF
+  BorderColor #000000
+}
+skinparam state {
+  BackgroundColor #FFFFFF
+  BorderColor #000000
+}
+skinparam activity {
+  BackgroundColor #FFFFFF
+  BorderColor #000000
+}
+skinparam sequence {
+  ArrowColor #000000
+  LifeLineBorderColor #000000
+  LifeLineBackgroundColor #FFFFFF
+  ParticipantBackgroundColor #FFFFFF
+  ParticipantBorderColor #000000
+  ActorBackgroundColor #FFFFFF
+  ActorBorderColor #000000
+}

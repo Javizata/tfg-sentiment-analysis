@@ -1,0 +1,11 @@
+@startuml actores
+!pragma layout smetana
+left to right direction
+
+actor "Analista / Usuario" as U
+rectangle "Sistema de Análisis\nde Sentimiento" as S
+actor "GitLab CI/CD" as G
+
+U --> S
+S <--> G
+@enduml

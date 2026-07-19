@@ -1,0 +1,20 @@
+@startuml actividad
+!pragma layout smetana
+
+start
+:Página de bienvenida;
+:Ver información de modelos;
+if (¿Modelos disponibles?) then (no)
+  :Lanzar pipeline /\nSubir DistilBERT;
+  :Cargar modelos en memoria;
+else (sí)
+endif
+:Seleccionar modelos;
+if (¿Acción?) then (Generar informe)
+  :Mostrar gráficos comparativos;
+else (Analizar reseña)
+  :Introducir texto;
+  :Mostrar predicción por modelo;
+endif
+stop
+@enduml

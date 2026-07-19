@@ -1,0 +1,68 @@
+@startuml secuencia_analizar_resena
+actor Usuario as U
+participant "review.html (JS)" as V
+participant "Socket.IO /stats" as S
+participant "stats/events.py" as E
+participant "predict_reviews /\ndistilbert_registry" as R
+participant "APP_STATE" as ST
+
+U -> V : Escribe reseña y pulsa "Analyze"
+V -> S : emit("analizar_resena", {text})
+S -> E : generate_review(text)
+E -> ST : lee models_to_use
+loop por cada modelo
+  alt modelo DistilBERT
+    E -> R : predict_distilbert(text, model)
+  else modelo clásico
+    E -> R : predict_review(text, model)
+  end
+  R --> E : sentiment, confidence, probs
+end
+E --> V : emit("result", {results})
+V --> U : Muestra sentimiento y confianza
+@enduml
+
+@startuml secuencia_lanzar_pipeline
+actor Usuario as U
+participant "pipeline_running.html" as V
+participant "pipeline/routes.py" as P
+participant "runner.py" as Run
+participant "GitLab API" as G
+participant "logs_stream.py" as L
+participant "artifacts.py" as A
+participant "model_registry.py" as Reg
+
+U -> P : POST /trigger-pipeline
+P -> Run : launch_pipeline()
+Run -> G : POST /pipeline (ref=main)
+G --> Run : pipeline_id
+Run -> L : background_task(follow_pipeline_logs)
+loop hasta finalizar
+  L -> G : GET jobs + trace
+  G --> L : estado + logs
+  L --> V : emit("job_log")
+end
+L -> A : download_artifacts(job_id)
+A -> G : GET artifacts (ZIP)
+A -> Reg : clean + load_classic_models()
+A --> V : emit("artifacts_ready")
+V --> U : "Training completed"
+@enduml
+
+@startuml secuencia_subir_distilbert
+actor Usuario as U
+participant "Interfaz" as V
+participant "pipeline/routes.py" as P
+participant "distilbert_upload.py" as Up
+participant "distilbert_registry.py" as Reg
+participant "APP_STATE" as ST
+
+U -> V : Selecciona ZIP y sube
+V -> P : POST /upload_distilbert
+P -> Up : upload_distilbert_zip()
+Up -> Reg : unload_distilbert_models()
+Up -> Up : guarda y extrae ZIP en artifacts/
+Up -> Reg : load_distilbert_models()
+Up -> ST : update_app_state()
+Up --> V : 200 OK (uploaded)
+@enduml

@@ -1,0 +1,67 @@
+# 5. Diagrama de clases / módulos
+
+La aplicación sigue un estilo modular-funcional; cada módulo se representa como una
+"clase-módulo" con sus funciones y estado principal.
+
+```mermaid
+classDiagram
+    class APP_STATE {
+        +bool classic_ready
+        +bool distilbert_ready
+        +bool ready
+        +list models_to_use
+        +dict metrics
+    }
+    class model_registry {
+        +load_classic_models()
+        +unload_classic_models()
+        +clean_old_classic_models()
+        -NLP, VECTORIZER, MODELS
+    }
+    class distilbert_registry {
+        +load_distilbert_models()
+        +unload_distilbert_models()
+        +predict_distilbert(text, key)
+        -DISTILBERT_MODELS
+    }
+    class predict_reviews {
+        +clean_text(text)
+        +preprocess(text)
+        +predict_review(text, name)
+    }
+    class artifact_state {
+        +update_app_state()
+    }
+    class runner {
+        +launch_pipeline()
+    }
+    class logs_stream {
+        +follow_pipeline_logs(id)
+    }
+    class artifacts {
+        +download_artifacts(job_id)
+    }
+    class charts {
+        +cargar_todo(models)
+    }
+    class metrics {
+        +load_classic_metrics(path)
+        +load_distilbert_metrics(path)
+    }
+    class distilbert_upload {
+        +upload_distilbert_zip()
+        +clean_old_distilbert_models()
+    }
+
+    predict_reviews ..> model_registry
+    distilbert_registry ..> metrics
+    model_registry ..> metrics
+    runner ..> logs_stream
+    logs_stream ..> artifacts
+    artifacts ..> model_registry
+    artifacts ..> artifact_state
+    distilbert_upload ..> distilbert_registry
+    distilbert_upload ..> artifact_state
+    charts ..> APP_STATE
+    artifact_state ..> APP_STATE
+```

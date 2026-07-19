@@ -1,0 +1,21 @@
+@startuml estados_opcionB
+!pragma layout smetana
+
+state "ready = false" as SinModelos
+state "ready = true" as Listo
+
+[*] --> SinModelos
+
+SinModelos --> ClasicosListos : load_classic_models()
+SinModelos --> DistilBERTListo : load_distilbert_models()
+ClasicosListos --> Listo
+DistilBERTListo --> Listo
+ClasicosListos --> SinModelos : clean_old_classic_models()
+DistilBERTListo --> SinModelos : clean_old_distilbert_models()
+
+note bottom of Listo
+  Versión simplificada (abstracción).
+  No representa que ambos tipos de
+  modelos puedan coexistir.
+end note
+@enduml

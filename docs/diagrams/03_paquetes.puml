@@ -1,0 +1,43 @@
+@startuml paquetes
+!pragma layout smetana
+
+package "raíz" {
+  [app.py]
+  [config.py]
+  [app_state.py]
+  [helpers.py]
+}
+
+package "blueprints" {
+  [main]
+  [pipeline]
+  [models]
+  [stats]
+}
+
+package "services" {
+  [services.models]
+  [services.pipelines]
+  [services.stats]
+}
+
+package "presentación" {
+  [templates + static]
+}
+
+database "artifacts" as ART
+
+[app.py] --> blueprints
+[main] --> [templates + static]
+[main] --> services
+[pipeline] --> [services.models]
+[pipeline] --> [services.pipelines]
+[models] --> [services.models]
+[stats] --> [services.stats]
+[stats] --> [services.models]
+[services.pipelines] --> [services.models]
+[services.models] --> [services.stats]
+[services.models] --> ART
+[services.pipelines] --> ART
+[services.stats] --> ART
+@enduml

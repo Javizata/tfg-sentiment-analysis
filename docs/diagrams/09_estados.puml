@@ -1,0 +1,17 @@
+@startuml estados
+!pragma layout smetana
+
+[*] --> SinModelos
+
+state SinModelos : ready = false
+state Listo : ready = true
+
+SinModelos --> ClasicosListos : pipeline OK /\nload_classic_models
+SinModelos --> DistilBERTListo : upload ZIP /\nload_distilbert_models
+ClasicosListos --> Listo
+DistilBERTListo --> Listo
+Listo --> Listo : seleccionar modelos
+Listo --> Listo : analizar reseña /\ngenerar informe
+ClasicosListos --> SinModelos : clean_old_classic_models
+DistilBERTListo --> SinModelos : clean_old_distilbert_models
+@enduml

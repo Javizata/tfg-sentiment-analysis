@@ -1,0 +1,24 @@
+@startuml despliegue
+!pragma layout smetana
+skinparam padding 6
+skinparam nodesep 25
+skinparam ranksep 45
+
+node "Dispositivo cliente" {
+  [Navegador web] as Nav
+}
+
+node "Servidor de aplicación" {
+  [Flask + SocketIO\n(eventlet)] as Flask
+  database "artifacts/\n(local)" as Artifacts
+}
+
+node "GitLab.com (nube)" {
+  [GitLab Runner\n(CI/CD)] as Runner
+}
+
+Nav --> Flask : HTTP / WebSocket
+Flask --> Runner : HTTPS REST\n(PRIVATE-TOKEN)
+Runner --> Flask : Artifacts ZIP
+Flask --> Artifacts
+@enduml

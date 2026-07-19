@@ -1,0 +1,26 @@
+@startuml estados_opcionA
+
+state "Disponibilidad de modelos" as Sistema {
+
+  state "Modelos clásicos" as Clasicos {
+    [*] --> ClasicoAusente
+    ClasicoAusente --> ClasicoCargado : load_classic_models()
+    ClasicoCargado --> ClasicoAusente : clean_old_classic_models()
+  }
+
+  ||
+
+  state "Modelos DistilBERT" as Distil {
+    [*] --> DistilAusente
+    DistilAusente --> DistilCargado : load_distilbert_models()
+    DistilCargado --> DistilAusente : clean_old_distilbert_models()
+  }
+}
+
+note bottom of Sistema
+  ready = classic_ready OR distilbert_ready
+  (artifact_state.py)
+  Ambas regiones son independientes:
+  pueden estar cargadas a la vez.
+end note
+@enduml

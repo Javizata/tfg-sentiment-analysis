@@ -1,0 +1,30 @@
+@startuml componentes
+!pragma layout smetana
+
+package "Navegador (Cliente)" {
+  [HTML/JS + Plotly\n+ Socket.IO client] as UI
+}
+
+package "Servidor Flask" {
+  [Flask App] as FL
+  [Socket.IO Server] as SIO
+  [Blueprints\n(controladores)] as BPc
+  [Services\n(negocio)] as SVc
+  [APP_STATE\n(estado en memoria)] as STATE
+  [Motores ML:\nscikit-learn, spaCy,\nTransformers/PyTorch] as ML
+}
+
+cloud "GitLab REST API" as GIT
+database "artifacts/\n(.pkl, .safetensors,\nmetrics.json)" as FS
+
+UI --> FL : HTTP
+UI --> SIO : WebSocket
+FL --> BPc
+SIO --> BPc
+BPc --> SVc
+SVc --> STATE
+SVc --> ML
+SVc --> GIT : HTTPS REST
+SVc --> FS
+ML --> FS
+@enduml

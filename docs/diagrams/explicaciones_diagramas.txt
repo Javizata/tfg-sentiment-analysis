@@ -1,0 +1,267 @@
+================================================================================
+ EXPLICACIÓN DE LOS DIAGRAMAS DE INGENIERÍA DEL SOFTWARE
+ Aplicación de Análisis de Sentimiento de reseñas de cine (Flask + SocketIO)
+ TFG - Ingeniería Informática
+================================================================================
+
+Este documento explica, diagrama por diagrama, qué representa cada uno y de qué
+parte del código real procede cada elemento, para que pueda justificarse durante
+la defensa del TFG.
+
+Las imágenes están en la carpeta "img/" en formato:
+  - PNG (alta resolución, dpi 200) -> insertar directamente en Word.
+  - SVG (vectorial) -> calidad perfecta a cualquier escala (recomendado si su
+    versión de Word lo admite: Insertar > Imágenes > Este dispositivo).
+
+Los archivos fuente editables son los ".puml" (PlantUML). El estilo visual común
+está en "_estilo.puml".
+
+
+--------------------------------------------------------------------------------
+1. DIAGRAMA DE ACTORES  (img/actores.png)
+--------------------------------------------------------------------------------
+Propósito:
+  Identifica las entidades externas que interactúan con el sistema.
+
+Elementos y justificación:
+  - Analista / Usuario: actor humano principal. Interactúa con la interfaz web
+    (carpeta templates/: init.html, model_info.html, review.html, graphs.html,
+    pipeline_running.html).
+  - GitLab CI/CD: sistema externo que ejecuta el pipeline de entrenamiento de los
+    modelos clásicos y devuelve los artefactos. Verificable en
+    services/pipelines/runner.py y logs_stream.py (llamadas a la API de GitLab
+    con cabecera PRIVATE-TOKEN).
+
+Nota: Se ha retirado "Hugging Face" como actor porque no es una dependencia en
+tiempo de ejecución del sistema, sino la fuente de los datasets/modelos usados
+durante la fase previa de entrenamiento (notebook). Mantenerlo podría inducir a
+error en la defensa.
+
+
+--------------------------------------------------------------------------------
+2. DIAGRAMA DE CASOS DE USO  (img/casos_uso.png)
+--------------------------------------------------------------------------------
+Propósito:
+  Representa las funcionalidades que ofrece el sistema y quién las inicia.
+
+Casos de uso y origen en el código:
+  - Ver información de modelos    -> blueprints/main/routes.py (ruta /model_info)
+  - Lanzar pipeline entrenamiento -> blueprints/pipeline/routes.py
+                                     (/trigger-pipeline -> launch_pipeline())
+  - Visualizar logs en tiempo real-> services/pipelines/logs_stream.py
+                                     (emit "job_log" por WebSocket)
+  - Descargar notebook DistilBERT -> blueprints/pipeline/routes.py
+                                     (/download_distilbert_notebook)
+  - Subir modelos DistilBERT (ZIP)-> blueprints/pipeline/routes.py
+                                     (/upload_distilbert -> upload_distilbert_zip())
+  - Seleccionar modelos a utilizar-> blueprints/models/events.py
+                                     (evento "selected_models")
+  - Generar informe comparativo   -> blueprints/stats/events.py (evento "report")
+  - Analizar una reseña           -> blueprints/stats/events.py
+                                     (evento "analizar_resena")
+  - Cargar modelos en memoria      -> load_classic_models() /
+                                     load_distilbert_models()
+
+Relaciones <<include>> (justificación):
+  - "Lanzar pipeline" incluye "Visualizar logs" y "Cargar modelos en memoria":
+    al lanzar el pipeline se inicia el streaming de logs y, al terminar, se
+    descargan los artefactos y se cargan los modelos (artifacts.py ->
+    load_classic_models()).
+  - "Subir DistilBERT" incluye "Cargar modelos en memoria":
+    upload_distilbert_zip() llama a load_distilbert_models().
+  - "Generar informe" y "Analizar reseña" incluyen "Seleccionar modelos":
+    ambos eventos leen APP_STATE["models_to_use"], que se rellena en el evento
+    "selected_models".
+
+Relación con el actor GitLab:
+  - "Lanzar pipeline" y "Visualizar logs" se conectan con GitLab CI/CD porque
+    dependen de su API REST.
+
+
+--------------------------------------------------------------------------------
+3. DIAGRAMA DE PAQUETES  (img/paquetes.png)
+--------------------------------------------------------------------------------
+Propósito:
+  Muestra la organización modular del código y las dependencias entre paquetes.
+
+Paquetes (corresponden a la estructura real de carpetas):
+  - raíz: app.py, config.py, app_state.py, helpers.py
+  - blueprints: main, pipeline, models, stats (controladores HTTP + eventos)
+  - services: models, pipelines, stats (lógica de negocio)
+  - presentación: templates + static
+  - artifacts: almacenamiento de modelos entrenados y métricas
+
+Dependencias:
+  - app.py registra los blueprints (app.register_blueprint).
+  - Los blueprints invocan a los servicios correspondientes.
+  - Los servicios leen/escriben en artifacts/ y actualizan APP_STATE.
+  Todo verificable en las sentencias "import" al inicio de cada archivo.
+
+
+--------------------------------------------------------------------------------
+4. DIAGRAMA DE COMPONENTES  (img/componentes.png)
+--------------------------------------------------------------------------------
+Propósito:
+  Vista de los componentes ejecutables y las interfaces de comunicación.
+
+Componentes y tecnologías (verificables en requirements.txt e imports):
+  - Cliente: HTML/JS + Plotly + cliente Socket.IO (templates/*.html).
+  - Flask App + Socket.IO Server (app.py, helpers.py).
+  - Blueprints (controladores) y Services (negocio).
+  - APP_STATE: estado global en memoria (app_state.py).
+  - Motores ML: scikit-learn/joblib y spaCy (model_registry.py),
+    Transformers/PyTorch (distilbert_registry.py).
+  - GitLab REST API (externo).
+  - artifacts/ (almacenamiento de .pkl, .safetensors y metrics.json).
+
+Interfaces:
+  - Cliente <-> Servidor: HTTP (peticiones) y WebSocket (eventos en tiempo real).
+  - Servidor <-> GitLab: HTTPS REST con token privado.
+
+
+--------------------------------------------------------------------------------
+5. DIAGRAMA DE CLASES / MÓDULOS  (img/clases.png)
+--------------------------------------------------------------------------------
+Propósito:
+  Representa los módulos principales y sus funciones.
+
+ACLARACIÓN IMPORTANTE (para la defensa):
+  La aplicación sigue un estilo MODULAR-FUNCIONAL, no orientado a objetos clásico.
+  Por ello cada "clase" del diagrama representa un MÓDULO (.py) y sus "métodos"
+  son las funciones reales de ese módulo. Es una adaptación legítima de la
+  notación UML de clases; conviene mencionarlo si le preguntan.
+
+Módulos representados (todos existen en el código):
+  - APP_STATE (app_state.py): estado global.
+  - model_registry.py: carga/descarga de modelos clásicos.
+  - distilbert_registry.py: carga/descarga y predicción con DistilBERT.
+  - predict_reviews.py: limpieza, preprocesado y predicción clásica.
+  - artifact_state.py: actualiza APP_STATE según los artefactos presentes.
+  - runner.py: lanza el pipeline de GitLab.
+  - logs_stream.py: hace streaming de logs y descarga artefactos al terminar.
+  - artifacts.py: descarga y extrae los artefactos del pipeline.
+  - charts.py: genera los gráficos comparativos (Plotly).
+  - metrics.py: carga las métricas desde los ficheros JSON.
+  - distilbert_upload.py: gestiona la subida del ZIP de DistilBERT.
+
+Las dependencias (flechas punteadas) reflejan las llamadas reales entre módulos.
+
+
+--------------------------------------------------------------------------------
+6. DIAGRAMA DE DESPLIEGUE  (img/despliegue.png)
+--------------------------------------------------------------------------------
+Propósito:
+  Muestra los nodos de ejecución y los protocolos de comunicación.
+
+Nodos:
+  - Dispositivo cliente: navegador web.
+  - Servidor de aplicación: Flask + SocketIO (eventlet) y almacenamiento local
+    artifacts/.
+  - GitLab.com: GitLab Runner que ejecuta el CI/CD.
+
+Comunicaciones (verificables en el código):
+  - Navegador <-> Flask: HTTP / WebSocket.
+  - Flask <-> GitLab: HTTPS REST con cabecera PRIVATE-TOKEN.
+  - GitLab -> Flask: entrega de artefactos (ZIP) que se guardan en artifacts/.
+
+
+--------------------------------------------------------------------------------
+7. DIAGRAMAS DE SECUENCIA
+--------------------------------------------------------------------------------
+Representan el flujo temporal de los tres escenarios más importantes. Cada paso
+sigue exactamente la lógica del código.
+
+7a. Analizar una reseña  (img/secuencia_analizar_resena.png)
+  Origen: blueprints/stats/events.py -> evento "analizar_resena".
+  Flujo: el usuario envía el texto -> se recorre APP_STATE["models_to_use"] ->
+  para cada modelo se llama a predict_distilbert() (DistilBERT) o predict_review()
+  (clásicos) -> se emite el evento "result" con sentimiento, confianza y
+  probabilidades -> la interfaz muestra el resultado.
+
+7b. Lanzar pipeline de entrenamiento  (img/secuencia_lanzar_pipeline.png)
+  Origen: blueprints/pipeline/routes.py -> runner.py -> logs_stream.py ->
+  artifacts.py -> model_registry.py.
+  Flujo: POST /trigger-pipeline -> launch_pipeline() -> POST a la API de GitLab ->
+  se obtiene el pipeline_id -> tarea en segundo plano follow_pipeline_logs() que
+  emite "job_log" en bucle -> al terminar, download_artifacts() descarga el ZIP,
+  limpia y carga los modelos clásicos -> se emite "artifacts_ready".
+
+7c. Subir modelos DistilBERT (ZIP)  (img/secuencia_subir_distilbert.png)
+  Origen: blueprints/pipeline/routes.py -> distilbert_upload.py ->
+  distilbert_registry.py.
+  Flujo: POST /upload_distilbert -> upload_distilbert_zip() -> se descargan de
+  memoria los modelos previos (unload) -> se guarda y descomprime el ZIP en
+  artifacts/ -> se cargan los nuevos modelos -> update_app_state() -> 200 OK.
+
+
+--------------------------------------------------------------------------------
+8. DIAGRAMA DE ACTIVIDAD  (img/actividad.png)
+--------------------------------------------------------------------------------
+Propósito:
+  Representa el flujo de trabajo principal del usuario a través de la aplicación.
+
+Flujo:
+  Inicio -> Página de bienvenida (init.html) -> Ver información de modelos
+  (model_info.html) -> ¿Hay modelos disponibles? (APP_STATE["ready"]):
+    - No: lanzar pipeline o subir DistilBERT -> cargar modelos en memoria.
+    - Sí: continuar.
+  -> Seleccionar modelos -> ¿Acción?:
+    - Generar informe: mostrar gráficos comparativos (graphs.html).
+    - Analizar reseña: introducir texto y mostrar la predicción de cada modelo
+      (review.html).
+  -> Fin.
+
+Es una síntesis fiel de la navegación entre plantillas combinada con la lógica
+de disponibilidad de modelos (APP_STATE).
+
+
+--------------------------------------------------------------------------------
+9. DIAGRAMA DE ESTADOS (APP_STATE)  (img/estados.png)
+--------------------------------------------------------------------------------
+Propósito:
+  Modela cómo evoluciona la disponibilidad de los modelos en el estado global.
+
+Origen: services/models/artifact_state.py, donde se define:
+  APP_STATE["ready"] = (APP_STATE["classic_ready"] or APP_STATE["distilbert_ready"])
+
+Estados:
+  - SinModelos (ready = false): no hay ningún modelo cargado.
+  - ClasicosListos: hay modelos clásicos disponibles.
+  - DistilBERTListo: hay modelos DistilBERT disponibles.
+  - Listo (ready = true): hay al menos un tipo de modelo disponible; se pueden
+    seleccionar modelos, generar informes y analizar reseñas.
+
+Transiciones (funciones reales):
+  - load_classic_models() / load_distilbert_models(): pasan a estado listo.
+  - clean_old_classic_models() / clean_old_distilbert_models(): vuelven a
+    SinModelos.
+
+
+================================================================================
+NOTA SOBRE CÓDIGO NO REPRESENTADO (para su conocimiento)
+================================================================================
+Los diagramas reflejan el flujo que REALMENTE se ejecuta. En el proyecto existe
+código duplicado o sin uso que se ha omitido deliberadamente:
+  - blueprints/stats/routes.py contiene copias de trigger_pipeline,
+    follow_pipeline_logs y download_artifacts que no forman parte del flujo
+    activo (el flujo real va por pipeline/routes.py -> runner.py ->
+    logs_stream.py).
+  - blueprints/models/routes.py no registra ninguna ruta.
+  - blueprints/main/events.py está prácticamente vacío.
+Conviene conocer esto por si surge en la defensa.
+
+
+================================================================================
+CÓMO REGENERAR LAS IMÁGENES
+================================================================================
+Desde la carpeta docs/diagramas, con Java instalado:
+
+  PNG (alta resolución):
+    java -jar plantuml.jar -charset UTF-8 -config "_estilo.puml" -tpng -o "img" "0*.puml"
+
+  SVG (vectorial):
+    java -jar plantuml.jar -charset UTF-8 -config "_estilo.puml" -tsvg -o "img" "0*.puml"
+
+Para más resolución en PNG, edite "_estilo.puml" y aumente el valor de
+"skinparam dpi" (por ejemplo, 300).
+================================================================================
