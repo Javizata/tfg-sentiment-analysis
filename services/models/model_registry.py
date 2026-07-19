@@ -7,7 +7,7 @@ import gc
 from app_state import APP_STATE
 from services.stats.metrics import load_classic_metrics
 
-# === REGISTRO EN MEMORIA ===
+# === IN-MEMORY REGISTRY ===
 NLP = None
 VECTORIZER = None
 MODELS = {}
@@ -21,12 +21,12 @@ def load_classic_models():
 
     APP_STATE["classic_models"] = False
 
-    # 1️⃣ Cargar spaCy una sola vez
+    # Load spaCy only once
     if NLP is None:
-        print("🔹 Loading spaCy model")
+        print("Loading spaCy model")
         NLP = spacy.load("en_core_web_sm")
 
-    # 2️⃣ Buscar artefactos
+    # Search for artifacts
     artifact_jobs = sorted(
         glob.glob(os.path.join(ARTIFACTS_DIR, "artifacts_job_*")),
         key=os.path.getmtime,
@@ -34,20 +34,20 @@ def load_classic_models():
     )
 
     if not artifact_jobs:
-        print("⚠️ No classic models found")
+        print(" No classic models found")
         _update_ready_state()
         return
 
     latest = artifact_jobs[0]
     model_dir = os.path.join(latest, "model")
 
-    # 3️⃣ Vectorizador
+    # Vectorizer
     if VECTORIZER is None:
         VECTORIZER = joblib.load(
             os.path.join(model_dir, "vectorizer_imdb.pkl")
         )
 
-    # 4️⃣ Modelos clásicos
+    # Classic models
     for file in os.listdir(model_dir):
         if file.endswith(".pkl") and file != "vectorizer_imdb.pkl":
             model_name = file.replace(".pkl", "")
@@ -55,7 +55,7 @@ def load_classic_models():
                 MODELS[model_name] = joblib.load(
                     os.path.join(model_dir, file)
                 )
-                print(f"✅ Classic model loaded: {model_name}")
+                print(f" Classic model loaded: {model_name}")
 
     APP_STATE["classic_models"] = len(MODELS) > 0
     
@@ -64,32 +64,32 @@ def load_classic_models():
 
 def unload_classic_models():
     """
-    Libera todos los modelos clásicos y el vectorizador de memoria.
-    Útil cuando llega un nuevo artifacts_job para forzar recarga.
+    Frees all classic models and the vectorizer from memory.
+    Useful when a new artifacts_job arrives to force reload.
     """
     global VECTORIZER, MODELS
 
-    # Eliminar modelos clásicos de memoria
+    # Remove classic models from memory
     for name in list(MODELS.keys()):
         del MODELS[name]
     MODELS.clear()
 
-    # Eliminar vectorizador
+    # Remove vectorizer
     if VECTORIZER is not None:
         del VECTORIZER
         VECTORIZER = None
 
-    # Nota: NLP (spaCy) se mantiene cargado ya que no cambia entre jobs
+    # Note: NLP (spaCy) remains loaded since it does not change between jobs
 
     APP_STATE["classic_models"] = False
     _update_ready_state()
 
     gc.collect()
-    print("🧹 Classic models and vectorizer unloaded")
+    print(" Classic models and vectorizer unloaded")
 
 def clean_old_classic_models():
     """
-    Elimina todas las carpetas job existentes en artifacts/
+    Removes all job folders in artifacts/
     """
     unload_classic_models()
     time.sleep(2)
@@ -98,7 +98,7 @@ def clean_old_classic_models():
             os.path.join(ARTIFACTS_DIR, entry)
         ):
             shutil.rmtree(os.path.join(ARTIFACTS_DIR, entry))
-            print(f"🗑️ Eliminado modelo clasico antiguo: {entry}")
+            print(f" Removed old classic model: {entry}")
             
 def _update_ready_state():
     APP_STATE["ready"] = (

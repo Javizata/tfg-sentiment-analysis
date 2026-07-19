@@ -16,8 +16,8 @@ main = Blueprint(
 def index():
     return render_template(
         "init.html",
-        title="Inicio",
-        description="Aplicación desarrollada como Trabajo Fin de Grado"
+        title="Home",
+        description="Application developed as a Bachelor's Final Project"
     )
 
 @main.route("/model_info")
@@ -30,8 +30,8 @@ def base():
 
 @main.route("/graphs")
 def graphs():
-    return render_template("graphs.html", title="Gráficos")
+    return render_template("graphs.html", title="Graphs")
 
 @main.route("/review")
 def review():
-    return render_template("review.html", title="Analisis")
+    return render_template("review.html", title="Analysis")

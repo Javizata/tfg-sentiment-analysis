@@ -54,7 +54,7 @@ def follow_pipeline_logs(pipeline_id):
                 all_done = False
 
         if all_done:
-            # Buscar job terminado con éxito
+            # Find job finished successfully
             finished = next((j for j in jobs if j["status"] == "success"), None)
 
             if finished:
@@ -62,7 +62,7 @@ def follow_pipeline_logs(pipeline_id):
             else:
                 socketio.emit(
                     "error",
-                    {"message": "La pipeline falló."},
+                    {"message": "The pipeline failed."},
                     namespace="/pipeline"
                 )            
                 socketio.sleep(2)

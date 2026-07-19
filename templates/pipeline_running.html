@@ -61,7 +61,7 @@
 
     .panel {
       background: linear-gradient(180deg, rgba(255, 255, 255, .02), rgba(0, 0, 0, .25)),
-                  linear-gradient(180deg, var(--panel), var(--panel-2));
+        linear-gradient(180deg, var(--panel), var(--panel-2));
       border: 1px solid rgba(0, 209, 255, .15);
       border-radius: 18px;
       box-shadow: 0 10px 30px rgba(0, 0, 0, .45);
@@ -89,7 +89,7 @@
     .button:hover {
       transform: translateY(-3px);
       box-shadow: 0 12px 30px rgba(0, 0, 0, .5),
-                  0 0 0 6px rgba(0, 209, 255, .25);
+        0 0 0 6px rgba(0, 209, 255, .25);
     }
 
     #loadingGif {
@@ -165,6 +165,15 @@
       font-weight: bold;
       margin-top: 8px;
     }
+
+    .button-success {
+      background: linear-gradient(180deg, rgba(0, 255, 166, 0.35), rgba(0, 255, 166, 0.15));
+      border-color: rgba(0, 255, 166, 0.6);
+      color: #00ffa6;
+      cursor: default;
+      text-decoration: none;
+
+    }
   </style>
 </head>
 
@@ -180,13 +189,13 @@
 
         <img id="loadingGif" src="{{ url_for('static', filename='img/Carga1.gif') }}" alt="Loading">
 
-        <div id="finishedText">✅ Training completed</div>
+        <div id="finishedText"> Training completed</div>
 
         <div id="logs" class="logs-container"></div>
 
         <div id="errors"></div>
 
-        <a href="{{ url_for('main.model_info') }}" class="button">
+        <a href="{{ url_for('main.model_info') }}" class="button" id="backBtn">
           Back
         </a>
 
@@ -208,16 +217,24 @@
     const jobsMap = {};
 
     socket.on("connect", () => {
-      console.log("🔥 Connected to /pipeline:", socket.id);
+      console.log(" Connected to /pipeline:", socket.id);
     });
 
     socket.on("artifacts_ready", (data) => {
-      console.log("✅ Artifacts ready:", data);
+      console.log(" Artifacts ready:", data);
 
       document.getElementById("loadingGif").style.display = "none";
       document.getElementById("finishedText").style.display = "block";
-      document.getElementById("pipelineTitle").textContent =
-        "Classic Models (Completed)";
+      document.getElementById("pipelineTitle").textContent ="Classic Models (Completed)";
+
+      const btn = document.getElementById("backBtn");
+
+      btn.textContent = "Success, go back";
+
+      btn.classList.add("button-success");
+
+      btn.classList.remove("button");
+
     });
 
     socket.on("job_log", (data) => {
@@ -259,4 +276,5 @@
   </script>
 
 </body>
+
 </html>

@@ -1,4 +1,3 @@
-
 import os
 from flask import Blueprint, render_template, flash, send_from_directory, abort
 from services.pipelines.runner import launch_pipeline
@@ -19,7 +18,7 @@ def trigger_pipeline_route():
         flash(message, "danger")
         return render_template("pipeline_running.html")
 
-    flash("Pipeline lanzada correctamente.", "success")
+    flash("Pipeline successfully launched.", "success")
     return render_template("pipeline_running.html")
 
 
@@ -35,7 +34,7 @@ def download_distilbert_notebook():
     file_path = os.path.join(ARTIFACTS_DIR, filename)
 
     if not os.path.exists(file_path):
-        abort(404, description="Notebook no encontrado")
+        abort(404, description="Notebook not found")
 
     return send_from_directory(
         ARTIFACTS_DIR,

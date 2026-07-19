@@ -8,3 +8,6 @@ pandas
 matplotlib
 datasets
 scikit-learn
+transformers
+torch
+plotly

@@ -25,7 +25,7 @@ def predict_review(text, model_name):
         
     if model_name not in registry.MODELS:
         raise ValueError(f"Model not loaded: {model_name}")
-    print("text",text)
+    print("text", text)
     cleaned = clean_text(text)
     processed = preprocess(cleaned)
 

@@ -14,8 +14,5 @@ GITLAB_PIPELINE_URL = f"{GITLAB_API_BASE}/pipeline"
 
 models_bp = Blueprint("models_bp", __name__)
 
-# =====================================================
-# ROUTES
-# =====================================================
 
 

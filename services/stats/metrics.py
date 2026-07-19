@@ -42,4 +42,3 @@ def load_distilbert_metrics(path):
         metrics = json.load(f)
 
     APP_STATE["metrics"]["distilbert_sst2_finetuned_model"] = metrics[0]
-

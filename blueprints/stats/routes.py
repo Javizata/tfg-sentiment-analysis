@@ -22,8 +22,8 @@ stats_bp = Blueprint("stats", __name__)
 def index():
     return render_template(
         "init.html",
-        title="Inicio",
-        description="Aplicación desarrollada como Trabajo Fin de Grado"
+        title="Home",
+        description="Application developed as a Bachelor's Final Project"
     )
 
 @stats_bp.route("/model_info")
@@ -89,7 +89,7 @@ def follow_pipeline_logs(pipeline_id):
                 all_done = False
 
         # =========================
-        # SI TERMINÓ TODO
+        # IF EVERYTHING IS FINISHED
         # =========================
         if all_done:
 
@@ -100,7 +100,7 @@ def follow_pipeline_logs(pipeline_id):
             else:
                 socketio.emit(
                     "error",
-                    {"message": "La pipeline falló."},
+                    {"message": "The pipeline failed."},
                     namespace="/pipeline"
                 )
 
@@ -116,10 +116,10 @@ def download_artifacts(job_id):
     artifacts_url = f"{GITLAB_API_BASE}/jobs/{job_id}/artifacts"
     headers = {"PRIVATE-TOKEN": GITLAB_TOKEN}
 
-    # 📁 Crear carpeta local si no existe
+    # 📁 Create local folder if it does not exist
     os.makedirs("artifacts", exist_ok=True)
 
-    # 📥 Descargar ZIP
+    # 📥 Download ZIP
     local_zip_path = os.path.join("artifacts", f"artifacts_job_{job_id}.zip")
 
     resp = requests.get(artifacts_url, headers=headers, stream=True)
@@ -129,9 +129,9 @@ def download_artifacts(job_id):
             for chunk in resp.iter_content(chunk_size=8192):
                 f.write(chunk)
 
-        print(f"Artifacts descargados: {local_zip_path}", flush=True)
+        print(f"Artifacts downloaded: {local_zip_path}", flush=True)
 
-        # (Opcional) Emitir evento a Socket.IO
+        # (Optional) Emit event to Socket.IO
         socketio.emit(
             "artifacts_ready",
             {"zip_path": local_zip_path},
@@ -140,7 +140,7 @@ def download_artifacts(job_id):
     else:
         socketio.emit(
             "error",
-            {"message": "No se pudieron descargar los artifacts"},
+            {"message": "Could not download artifacts"},
             namespace="/pipeline"
         )
 # =====================================================
@@ -151,7 +151,7 @@ def download_artifacts(job_id):
 def trigger_pipeline():
 
     if not GITLAB_TOKEN or not GITLAB_PROJECT_ID:
-        raise ValueError("Falta GITLAB_TOKEN o GITLAB_PROJECT_ID en el entorno")
+        raise ValueError("Missing GITLAB_TOKEN or GITLAB_PROJECT_ID in environment")
 
     headers = {"PRIVATE-TOKEN": GITLAB_TOKEN}
     data = {"ref": "main"}
@@ -160,22 +160,22 @@ def trigger_pipeline():
         response = requests.post(GITLAB_PIPELINE_URL, headers=headers, data=data, timeout=10)
 
         if response.status_code != 201:
-            flash(f"Error lanzando pipeline ({response.status_code}): {response.text}", "danger")
+            flash(f"Error launching pipeline ({response.status_code}): {response.text}", "danger")
             return render_template("base.html")
 
-        flash("Pipeline lanzada correctamente.", "success")
+        flash("Pipeline successfully launched.", "success")
         pipeline_id = response.json()["id"]
 
-        # Resetear buffer de logs
+        # Reset log buffer
         global job_last_size
         job_last_size = {}
 
-        # Lanzar hilo para logs + métricas
+        # Start thread for logs + metrics
         thread = Thread(target=follow_pipeline_logs, args=(pipeline_id,))
         thread.daemon = True
         thread.start()
 
     except requests.exceptions.RequestException as e:
-        flash(f"Error de conexión a GitLab: {str(e)}", "danger")
+        flash(f"GitLab connection error: {str(e)}", "danger")
 
     return render_template("trigger-pipeline.html")

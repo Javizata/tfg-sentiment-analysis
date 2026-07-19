@@ -10,21 +10,21 @@ from services.models.distilbert_registry import predict_distilbert
 
 @socketio.on("connect", namespace="/stats")
 def handle_connect():
-    print("Cliente conectado para stats")
-    emit("server_message", {"data": "Conectado al servidor"})
+    print("Client connected for stats")
+    emit("server_message", {"data": "Connected to the server"})
 
 @socketio.on("report", namespace="/stats")
 def generate_graphs():
-    print("📊 Gráficos solicitados")
+    print("📊 Graphs requested")
 
-    # 1️⃣ Modelos seleccionados por el usuario
+    # 1️⃣ Models selected by the user
     models_selected = APP_STATE.get("models_to_use", [])
 
     if not models_selected:
-        emit("error", {"message": "No hay modelos seleccionados"})
+        emit("error", {"message": "No models selected"})
         return
 
-    # 2️⃣ Generar gráficos dinámicamente
+    # 2️⃣ Generate graphs dynamically
     (
         fig_barras,
         fig_radar,
@@ -34,7 +34,7 @@ def generate_graphs():
         fig_precision_recall
     ) = cargar_todo(models_selected)
 
-    # 3️⃣ Emitir cada gráfico al frontend
+    # 3️⃣ Emit each graph to the frontend
     emit_plot("grafico_barras", fig_barras)
     emit_plot("radar", fig_radar)
     emit_plot("tabla", fig_tabla)
@@ -44,8 +44,8 @@ def generate_graphs():
 
 
 @socketio.on("analizar_resena", namespace="/stats")
-def generate_resena(text):
-    print("Reseña solicitada")
+def generate_review(text):
+    print("Review requested")
     print(text)
     results = []
     for model in APP_STATE["models_to_use"]:
@@ -68,5 +68,3 @@ def emit_plot(event, fig):
         event,
         json.loads(json.dumps(fig, cls=PlotlyJSONEncoder))
     )
-
-    

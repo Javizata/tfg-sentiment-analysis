@@ -46,7 +46,7 @@ def cargar_todo(models_selected:list = ["logistic_imdb","nb_imdb","svm_imdb","di
     recall = [v["recall"] for v in metrics_list]
     f1 = [v["f1_score"] for v in metrics_list]
     
-    #BARRAS AGRUPADAS
+    # GROUPED BAR CHART
     fig1 = go.Figure()
     fig1.add_bar(x=models, y=accuracy, name="Accuracy")
     fig1.add_bar(x=models, y=precision, name="Precision")
@@ -60,7 +60,7 @@ def cargar_todo(models_selected:list = ["logistic_imdb","nb_imdb","svm_imdb","di
         yaxis=dict(range=[0.8, 0.92])
     )
 
-    #RADAR
+    # RADAR
     radar_metrics = ["Accuracy", "Precision", "Recall", "F1-score"]
     fig2 = go.Figure()
 
@@ -78,7 +78,7 @@ def cargar_todo(models_selected:list = ["logistic_imdb","nb_imdb","svm_imdb","di
         polar=dict(radialaxis=dict(range=[0.8, 0.92]))
     )
     
-    #TABLA COMPARATIVA
+    # COMPARISON TABLE
     fmt = lambda x: f"{x:.3f}"
 
     fig3 = go.Figure(data=[go.Table(
@@ -88,11 +88,11 @@ def cargar_todo(models_selected:list = ["logistic_imdb","nb_imdb","svm_imdb","di
 
         header=dict(
             values=[
-                "<b>Model</b>",
+                "Model",
                 "Acc",
                 "Prec",
                 "Rec",
-                "<b>F1</b>"
+                "F1"
             ],
             fill_color=[
                 "#0f2430",  
@@ -140,7 +140,7 @@ def cargar_todo(models_selected:list = ["logistic_imdb","nb_imdb","svm_imdb","di
         title_text="Model Metrics Comparison Table"
     )
 
-    #HEATMAP DE MÉTRICAS
+    # METRICS HEATMAP
     metric_matrix = np.array([accuracy, precision, recall, f1])
 
     fig4 = go.Figure(data=go.Heatmap(
@@ -157,7 +157,7 @@ def cargar_todo(models_selected:list = ["logistic_imdb","nb_imdb","svm_imdb","di
         title_text="Metrics Heatmap by Model"
     )
 
-    #RANKING POR F1-SCORE 
+    # F1-SCORE RANKING
     order = np.argsort(f1)[::-1]
     fig5 = go.Figure(
         go.Bar(
@@ -171,7 +171,7 @@ def cargar_todo(models_selected:list = ["logistic_imdb","nb_imdb","svm_imdb","di
         title_text="Model Ranking by F1 Score"
     )
 
-    #PRECISION vs RECALL
+    # PRECISION vs RECALL
     fig6 = go.Figure()
 
     fig6.add_trace(go.Scatter(
@@ -179,7 +179,7 @@ def cargar_todo(models_selected:list = ["logistic_imdb","nb_imdb","svm_imdb","di
         y=precision,
         mode="markers",
         marker=dict(size=14, color="#00ffa6"),
-        name="Modelos"
+        name="Models"
     ))
 
     annotations = []
@@ -190,8 +190,8 @@ def cargar_todo(models_selected:list = ["logistic_imdb","nb_imdb","svm_imdb","di
             text=label,
             showarrow=True,
             arrowhead=7,
-            ax=20,     # desplazamiento horizontal
-            ay=-20,    # desplazamiento vertical
+            ax=20,
+            ay=-20,
             font=dict(size=12, color="#e9f1f5"),
             bgcolor="rgba(15,26,36,0.85)",
             borderpad=4

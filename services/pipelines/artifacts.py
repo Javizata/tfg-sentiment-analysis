@@ -15,13 +15,13 @@ def download_artifacts(job_id):
     url = f"https://gitlab.com/api/v4/projects/{GITLAB_PROJECT_ID}/jobs/{job_id}/artifacts"
     headers = {"PRIVATE-TOKEN": GITLAB_TOKEN}
 
-    # 1️⃣ Descargar ZIP
+    #Download ZIP
     resp = requests.get(url, headers=headers, stream=True)
     
     if resp.status_code != 200:
         socketio.emit(
             "error",
-            {"message": "No se pudieron descargar los artifacts."},
+            {"message": "Could not download artifacts."},
             namespace="/pipeline"
         )
         return
@@ -39,27 +39,26 @@ def download_artifacts(job_id):
         for chunk in resp.iter_content(chunk_size=8192):
             f.write(chunk)
 
-    # 2️⃣ Crear carpeta destino con el mismo nombre
+    #Create destination folder with the same name
     extract_dir = os.path.join(
         ARTIFACTS_DIR,
         f"artifacts_job_{job_id}"
     )
     os.makedirs(extract_dir, exist_ok=True)
 
-    # 3️⃣ Extraer ZIP EN ESA CARPETA
+    #Extract ZIP INTO THAT FOLDER
     with zipfile.ZipFile(zip_path, "r") as z:
         z.extractall(extract_dir)
 
-    # 4️⃣ Borrar ZIP
+    #Delete ZIP
     os.remove(zip_path)
 
-    # 5️⃣ Actualizar estado + cargar modelos
+    #Update state + load models
+    update_app_state()
+    load_classic_models()
     socketio.emit(
         "artifacts_ready",
         {"job_id": job_id},
         namespace="/pipeline"
     )
-    update_app_state()
-    load_classic_models()
-
     

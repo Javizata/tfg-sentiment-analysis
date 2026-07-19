@@ -1,2 +1,5 @@
+import os
+
+
 class Config:
-    SECRET_KEY = "REMOVED_SECRET_KEY"
+    SECRET_KEY = os.environ["SECRET_KEY"]

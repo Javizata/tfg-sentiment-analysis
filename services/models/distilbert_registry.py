@@ -32,8 +32,8 @@ def load_distilbert_models():
             
 def unload_distilbert_models():
     """
-    Libera todos los modelos DistilBERT de memoria
-    (NECESARIO en Windows antes de borrar archivos)
+    Frees all DistilBERT models from memory
+    (REQUIRED on Windows before deleting files)
     """
     global DISTILBERT_MODELS
 
@@ -47,7 +47,7 @@ def unload_distilbert_models():
     torch.cuda.empty_cache()
     gc.collect()
 
-    print("🧹 DistilBERT liberado de memoria")
+    print("DistilBERT released from memory")
     
 def predict_distilbert(text, model_key):
     entry = DISTILBERT_MODELS[model_key]

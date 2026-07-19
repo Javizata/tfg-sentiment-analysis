@@ -7,12 +7,12 @@ from services.models.model_registry import load_classic_models
 
 @socketio.on("connect", namespace="/model_info")
 def handle_connect():
-    print("Cliente conectado en models")
-    emit("server_message", {"data": "Conectado al servidor"})
+    print("Client connected to models")
+    emit("server_message", {"data": "Connected to the server"})
 
 @socketio.on("mensaje_cliente", namespace="/base")
 def handle_message(data):
-    print("Mensaje recibido:", data)
+    print("Message received:", data)
     emit("server_message", {"data": data})
     
 @socketio.on("get_app_state", namespace="/model_info")
@@ -30,7 +30,7 @@ def selected_models(data):
     if not APP_STATE["ready"]:
             emit(
                 "error",
-                {"message": "No hay modelos disponibles"},
+                {"message": "No models available"},
                 namespace="/stats"
             )
             return
@@ -51,5 +51,3 @@ def selected_models(data):
             {"url": url_for("main.graphs")},
             namespace="/model_info"
         )
-
-        

@@ -15,7 +15,7 @@ def allowed_file(filename):
 
 def clean_old_distilbert_models():
     """
-    Elimina todas las carpetas DistilBERT existentes en artifacts/
+    Removes all existing DistilBERT folders in artifacts/
     """
     unload_distilbert_models()
     time.sleep(2)
@@ -24,7 +24,7 @@ def clean_old_distilbert_models():
             os.path.join(ARTIFACTS_DIR, entry)
         ):
             shutil.rmtree(os.path.join(ARTIFACTS_DIR, entry))
-            print(f"🗑️ Eliminado modelo DistilBERT antiguo: {entry}")
+            print(f"Removed old DistilBERT model: {entry}")
 
 
 def upload_distilbert_zip():
@@ -45,7 +45,7 @@ def upload_distilbert_zip():
     zip_path = os.path.join(ARTIFACTS_DIR, file.filename)
     file.save(zip_path)
 
-    # 🔓 Extraer ZIP en artifacts/
+    # Extract ZIP into artifacts/
     with zipfile.ZipFile(zip_path, "r") as zip_ref:
         zip_ref.extractall(ARTIFACTS_DIR)
 

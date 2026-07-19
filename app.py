@@ -16,16 +16,14 @@ def create_app():
     app = Flask(__name__, template_folder='templates', static_folder='static')
     app.config.from_object(Config)
 
-    # Inicializar Socket.IO
+    # Socket.IO
     socketio.init_app(app, cors_allowed_origins="*")
 
-    # Registrar blueprints HTTP
     app.register_blueprint(main)
     app.register_blueprint(pipeline_bp)
     app.register_blueprint(models_bp)
     app.register_blueprint(stats_bp)
 
-    # Registrar MÓDULOS DE EVENTOS (Socket.IO)
     import blueprints.main.events
     import blueprints.pipeline.events
     import blueprints.models.events
